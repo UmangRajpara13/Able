@@ -1,0 +1,16 @@
+{
+  "name": "able",
+  "version": "1.0.0",
+  "description": "",
+  "main": "able_engine.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node able_engine.js"
+  },
+  "author": "umang",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.11.0"
+  }
+}
