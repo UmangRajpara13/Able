@@ -9,14 +9,33 @@
 //         }
 //     });
 
+import { execSync } from 'child_process'
+
+process.on('uncaughtException', (error) => {
+  console.log('uncaught', error)
+  if (error.code == 'EADDRINUSE') {
+    execSync('fuser -k 1111/tcp',
+      (error, stdout, stderr) => {
+        console.log(stdout);
+        console.log(stderr);
+        if (error !== null) {
+          console.log(`exec error: ${error}`);
+        }
+      });
+    throw 'exit'
+  }
+})
+
 import { WebSocketServer } from 'ws';
 
 const port = 1111
-var query_appdata_index = [], ws
+var query_appdata_index = [], ws, wss
 
-
-const wss = new WebSocketServer({ port: port });
-
+try {
+  wss = new WebSocketServer({ port: port });
+} catch (error) {
+  console.log(`error caught`, error)
+}
 wss.getUniqueID = function () {
   function s4() {
     return `${parseInt(Math.floor((1 + Math.random()) * 0x10000), 16)}`.substring(1);
@@ -61,12 +80,20 @@ const rl = createInterface({
 });
 
 // var response
+var user_actions = ['restart wifi', 'restart bluetooth', 'sync', 'merge']
+var i = 0
 
 async function Converse() {
-  rl.question("user(BOT) -> ",(data)=>{
-    console.log(data)
-    Converse()
-  });
+  // rl.question("user(BOT) -> ", (data) => {
+  //   console.log(data)
+
+  //   Converse()
+  // });
+  // await rl.question("user(BOT) -> ")
+
+  rl.write(`${user_actions[i]}\r`); i++
+  i < user_actions.length ? Converse() : process.exit(0)
+
 }
 Converse()
 
