@@ -11,6 +11,9 @@
   "author": "umang",
   "license": "ISC",
   "dependencies": {
+    "@deepgram/sdk": "^1.14.0",
+    "open": "^8.4.0",
+    "vosk": "^0.3.39",
     "ws": "^8.11.0"
   }
 }

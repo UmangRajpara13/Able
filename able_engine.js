@@ -1,15 +1,5 @@
-// const { exec } = require('child_process');
-
-// var yourscript = exec('sh ~/able_scripts/test.sh',
-//     (error, stdout, stderr) => {
-//         console.log(stdout);
-//         console.log(stderr);
-//         if (error !== null) {
-//             console.log(`exec error: ${error}`);
-//         }
-//     });
-
-import { execSync } from 'child_process'
+import { execSync, exec, spawn } from 'child_process'
+import open from 'open';
 
 process.on('uncaughtException', (error) => {
   console.log('uncaught', error)
@@ -29,7 +19,25 @@ process.on('uncaughtException', (error) => {
 import { WebSocketServer } from 'ws';
 
 const port = 1111
-var query_appdata_index = [], ws, wss
+var wss
+
+var interrogativeWords = ['what', 'which', 'when', 'where','how',
+  'whom', 'who', 'are', 'aren\'t', 'is', 'isn\'t', 'does', 'doesn\'t',
+  'weather','why','whose','google']
+
+var stt = spawn(`./whisper-mint/venv/bin/python3`, [`./whisper-mint/listen.py`]);
+
+stt.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+});
+
+stt.stderr.on('data', (data) => {
+  console.error(`stderr: ${data}`);
+});
+
+stt.on('close', (code) => {
+  console.log(`child process exited with code ${code}`);
+});
 
 try {
   wss = new WebSocketServer({ port: port });
@@ -57,43 +65,32 @@ wss.on('connection', async (ws, req) => {
     console.log(`!!! Connection Failed ${error}`)
   });
 
-  ws.on('message', async (recieveData) => {
-    console.log(`Message Received ${recieveData}`, typeof recieveData)
+  ws.on('message', async (recievedData) => {
+    console.log(`${recievedData}`)
+    var query = `${recievedData}`.split('|')[1].trim().toLowerCase()
+    
+    switch (`${recievedData}`.split('|')[0]) {
+      // case `addto_query_appdata_index`:
+      //   query_appdata_index.push(`${recievedData}`.split('<|>')[1])
+      //   console.log(`query_appdata_index`, query_appdata_index)
+      //   break;
+      case `stt`:
+        if (interrogativeWords.some(startString => query.startsWith(startString))) {
+          await open(`https://www.google.com/search?q=${query}`, { app: { name: 'firefox' } });
+        } else {
+          // console.log(query)
+        }
 
-    switch (`${recieveData}`.split('<|>')[0]) {
-      case `addto_query_appdata_index`:
-        query_appdata_index.push(`${recieveData}`.split('<|>')[1])
-        console.log(`query_appdata_index`, query_appdata_index)
         break;
       default:
+        console.log(`Unhandled -> ${recievedData}`)
         break;
     }
   });
 })
 
 
-import { createInterface } from "readline";
 
-const rl = createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+// activeApp = `${execSync('./activeApp.sh')}`.split('=')[1].split(',')[0]
 
-// var response
-var user_actions = ['restart wifi', 'restart bluetooth', 'sync', 'merge']
-var i = 0
-
-async function Converse() {
-  // rl.question("user(BOT) -> ", (data) => {
-  //   console.log(data)
-
-  //   Converse()
-  // });
-  // await rl.question("user(BOT) -> ")
-
-  rl.write(`${user_actions[i]}\r`); i++
-  i < user_actions.length ? Converse() : process.exit(0)
-
-}
-Converse()
 
