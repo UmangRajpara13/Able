@@ -1,7 +1,6 @@
 import asyncio
-import io
 import sys
-
+from websocketInterface import send
 import numpy as np
 import sounddevice as sd
 from timer import Timer
@@ -9,6 +8,7 @@ import soundfile as sf
 import queue
 from transcribe import stt
 from websocketInterface import connectWebSocket
+import os
 
 tmp = None
 
@@ -110,6 +110,7 @@ async def record_buffer(**kwargs):
 async def main(frames=100_000_000, channels=1, dtype='float32', **kwargs):
     # asyncio.run()
     await connectWebSocket("ws://localhost:1111")
+    await send("sttpid:"+str(os.getpid()))
     await record_buffer(**kwargs)
 
 if __name__ == "__main__":

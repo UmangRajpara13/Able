@@ -17,3 +17,6 @@ var yourscript = exec(`./activeApp.sh`,
             console.log(`exec error: ${error}`);
         }
     });
+
+var activeApp = execSync('./activeApp.sh')
+console.log(`${activeApp}`)

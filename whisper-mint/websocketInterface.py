@@ -10,4 +10,4 @@ async def connectWebSocket(uri, ):
 
 
 async def send(msg):
-    await ws.send('stt|' + msg)
+    await ws.send(msg)

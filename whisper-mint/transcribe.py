@@ -7,7 +7,6 @@ import gc
 import os
 from websocketInterface import send
 import asyncio
-import socketio
 
 print("cuda", torch.cuda.is_available(), end=". ")
 
@@ -15,7 +14,7 @@ gc.collect()
 torch.cuda.empty_cache()
 
 model = whisper.load_model("base.en")
-sio = socketio.Client("ws://localhost:1111")
+
 def stt():
 
     start = time.perf_counter()
@@ -35,5 +34,5 @@ def stt():
     result = model.transcribe(arr)
     os.remove("action.wav")
 
-    print('\U0001F3A4 \033[92m',result["text"],"\033[0m","{:.2f}".format(time.perf_counter() - start),"s\n")
-    asyncio.run(send(result["text"]))
+    # print('\U0001F3A4 \033[92m',result["text"],"\033[0m","{:.2f}".format(time.perf_counter() - start),"s\n")
+    asyncio.run(send('stt:' + result["text"]))
