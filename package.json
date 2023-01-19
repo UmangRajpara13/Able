@@ -6,16 +6,19 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node able_engine.js"
+    "start": "sh startUp.sh",
+    "stt": "./whisper-mint/STT/bin/python3 ./whisper-mint/listen.py"
   },
   "author": "umang",
   "license": "ISC",
   "dependencies": {
     "@deepgram/sdk": "^1.14.0",
     "chalk": "^5.2.0",
+    "fs-extra": "^11.1.0",
     "open": "^8.4.0",
     "sprintf-js": "^1.1.2",
     "vosk": "^0.3.39",
-    "ws": "^8.11.0"
+    "ws": "^8.11.0",
+    "yargs": "^17.6.2"
   }
 }

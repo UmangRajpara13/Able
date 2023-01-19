@@ -8,15 +8,25 @@ import os
 from websocketInterface import send
 import asyncio
 
-print("cuda", torch.cuda.is_available(), end=". ")
+print("Is cuda available?", torch.cuda.is_available(), end=". ")
+
+print("Is cuDNN version:", torch.backends.cudnn.version())
+
+print("cuDNN enabled? ", torch.backends.cudnn.enabled)
+
+print("Device count?", torch.cuda.device_count())
+
+print("Current device?", torch.cuda.current_device())
+
+print("Device name? ", torch.cuda.get_device_name(torch.cuda.current_device()))
 
 gc.collect()
 torch.cuda.empty_cache()
 
 model = whisper.load_model("base.en")
 
-def stt():
 
+def stt():
     start = time.perf_counter()
     try:
         # This launches a subprocess to decode audio while down-mixing and resampling as necessary.

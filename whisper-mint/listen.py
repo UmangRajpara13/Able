@@ -32,8 +32,14 @@ async def record_buffer(**kwargs):
         nonlocal idx, idy, listening_initialized
         nonlocal buffer, prefix_indata, threshold
 
-        prefix_indata[idy: idy + len(indata)] = indata
-        idy += len(indata)
+        if prefix_indata.size < indata.size:
+            prefix_indata = np.empty((100_000_000, 1), dtype='float32')
+            idy = 0
+
+        else:
+            prefix_indata[idy: idy + len(indata)] = indata
+
+            idy += len(indata)
 
         # calc abs of samples -> x
         x = np.absolute(indata)
