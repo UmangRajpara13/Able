@@ -6,14 +6,7 @@ import { join } from 'path';
 import chalk from 'chalk';
 import open from 'open';
 
-
 var wss, sttpid, wsMap = new Map()
-
-
-process.on('SIGINT', function () {
-    console.log(`SIGINT: kill transcription with PID:${sttpid}`);
-    execSync(`kill -9 ${sttpid}`)
-});
 
 var interrogativeWords = ['what', 'which', 'when', 'where', 'how', 'do', 'can', 'may',
     'whom', 'who', 'are', 'aren\'t', 'is', 'isn\'t', 'does', 'doesn\'t',
@@ -56,7 +49,16 @@ function SetupWebSocketListener(port) {
 
                     if (interrogativeWords.some(startString => query.startsWith(startString))) {
                         if (query.startsWith('google')) query = query.replace('google', '')
-                        open(`https://www.google.com/search?q=${query}`)
+
+                        // open(`https://www.google.com/search?q=${query}`)
+
+                        const execute = spawn(`bash`, ['browse.sh', `Search=${query}`], {
+                            cwd: join(process.cwd(), './able_scripts'),
+                            detached: true,
+                            stdio: 'ignore',
+                        })
+                        execute.unref();
+
                     } else {
 
                         raw = query.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s{2,}/g, " ")
@@ -71,8 +73,7 @@ function SetupWebSocketListener(port) {
                                 console.log(activeApp)
                                 activeApp = activeApp.split('=')[1].split(',')[1].replaceAll('"', '').trim()
                                 const execute = spawn(`./${actionScript}.sh`, [`ActiveApp=${activeApp}`], {
-                                    cwd: join(homedir(), 'able_scripts'),
-                                    // stdio: 'inherit'
+                                    cwd: join(process.cwd(), './able_scripts'),
                                 })
 
                                 execute.stdout.on('data', (data) => {
@@ -110,7 +111,11 @@ function SetupWebSocketListener(port) {
     })
 }
 
-export function StartWebSocketServer(port) {
+export function StartWebSocketServer(port,argv) {
+    if (argv.stt != 'OFF') process.on('SIGINT', () => {
+        console.log(`SIGINT: kill transcription with PID:${sttpid}`);
+        execSync(`kill -9 ${sttpid}`)
+    });
     try {
         wss = new WebSocketServer({ port: port });
         SetupWebSocketListener(port)

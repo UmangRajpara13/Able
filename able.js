@@ -12,29 +12,25 @@ import { outputJSONSync } from 'fs-extra/esm';
 
 
 const argv = yargs(hideBin(process.argv)).parse()
-const port = 1111
+const port = process.env.NODE_ENV == 'production' ? 1111 : 2222
 
 
 
 // collect commandline args
 console.log(argv)
-outputJSONSync('./pid.json', { parent: argv.parentPID , engine: process.pid})
+outputJSONSync('./pid.json', { parent: argv.parentPID, engine: process.pid })
 
 
 // handle engine exit 
 process.on('SIGINT', function () {
-  console.log('kill stt on sigint');
-  execSync(`kill -9 ${sttpid}`)
-  stt.stdin.pause();
-  stt.kill();
-  process.abort()
+
 });
 
 // handle errors if any, apply trouble shoot and then run again
 process.on('uncaughtException', (error) => {
   console.log('uncaught', error)
   if (error.code == 'EADDRINUSE') {
-    execSync('fuser -k 1111/tcp',
+    execSync(`fuser -k ${port}/tcp`,
       (error, stdout, stderr) => {
         console.log(stdout);
         console.log(stderr);
@@ -58,9 +54,9 @@ try {
 
 function main() {
   // start websocet server
-  StartWebSocketServer(port)
+  StartWebSocketServer(port, argv)
   // start STT engine with cli args if any
-  StartTranscription()
+  if (argv.stt != 'OFF') StartTranscription(port, argv)
 
 }
 main()

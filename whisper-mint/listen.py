@@ -32,7 +32,9 @@ async def record_buffer(**kwargs):
         nonlocal idx, idy, listening_initialized
         nonlocal buffer, prefix_indata, threshold
 
-        if prefix_indata.size < indata.size:
+        # print(prefix_indata.size , prefix_indata.size - idy ,indata.size)
+
+        if prefix_indata.size - idy < indata.size:
             prefix_indata = np.empty((100_000_000, 1), dtype='float32')
             idy = 0
 
@@ -115,7 +117,8 @@ async def record_buffer(**kwargs):
 
 async def main(frames=100_000_000, channels=1, dtype='float32', **kwargs):
     # asyncio.run()
-    await connectWebSocket("ws://localhost:1111")
+    print(sys.argv[1:])
+    await connectWebSocket("ws://localhost:"+str(sys.argv[1]))
     await send("sttpid:"+str(os.getpid()))
     await record_buffer(**kwargs)
 
