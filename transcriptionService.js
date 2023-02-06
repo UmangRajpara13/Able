@@ -11,7 +11,7 @@ export function StartTranscription(port,argv) {
         process.abort()
     });
 
-    stt = spawn(`./whisper-mint/STT/bin/python3`, [`./whisper-mint/listen.py`, `${port}`]);
+    stt = spawn(`./whisper-mint/whisper/bin/python3`, [`./whisper-mint/listen.py`, `${port}`]);
 
     stt.stdout.on('data', (data) => {
         console.log(`STT stdout: ${data}`);

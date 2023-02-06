@@ -7,17 +7,19 @@
   "scripts": {
     "dev": "sh start_dev.sh",
     "start": "sh start_prod.sh",
-    "engine_only":"node able.js --stt=OFF",
-    "stt": "whisper-mint/STT/bin/python3 ./whisper-mint/listen.py 2222",
-    "deploy":"cp -a . $HOME/able",
-    "deploy-rsync":"rsync -av --exclude='.git' ./ $HOME/able"
+    "engine_only": "node able.js --stt=OFF",
+    "stt": "whisper-mint/whisper/bin/python3 ./whisper-mint/listen.py 2222",
+    "deploy": "cp -a . $HOME/able",
+    "deploy-rsync": "rsync -av --exclude='.git' --exclude='record.txt' ./ $HOME/able"
   },
   "author": "umang",
   "license": "ISC",
   "dependencies": {
     "chalk": "^5.2.0",
+    "chokidar": "^3.5.3",
     "fs-extra": "^11.1.0",
     "open": "^8.4.0",
+    "pouchdb": "^8.0.0",
     "ws": "^8.11.0",
     "yargs": "^17.6.2"
   }

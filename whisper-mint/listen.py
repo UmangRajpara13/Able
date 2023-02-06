@@ -32,7 +32,7 @@ async def record_buffer(**kwargs):
         nonlocal idx, idy, listening_initialized
         nonlocal buffer, prefix_indata, threshold
 
-        # print(prefix_indata.size , prefix_indata.size - idy ,indata.size)
+        # print(prefix_indata.size , prefix_indata.size - idy ,indata.sie)
 
         if prefix_indata.size - idy < indata.size:
             prefix_indata = np.empty((100_000_000, 1), dtype='float32')
