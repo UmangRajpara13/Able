@@ -1,0 +1,38 @@
+{
+    "code.Code": {
+        "say-hello": {
+            "api": "say-hello"
+        },
+        "new-window": {
+            "debug": false,
+            "cli": "code",
+            "args": [
+                "--new-window"
+            ]
+        },
+        "audit-changes": {
+            "api": "audit-changes"
+        },
+        "okay": {
+            "api": "git-stage-current-file"
+        },
+        "create-a-checkpoint": {
+            "api": "git-commit"
+        },
+        "upload": {
+            "api": "git-push"
+        },
+        "open-folder": {
+            "api": "open-folder"
+        },
+        "create-a-bash-script": {
+            "api": "create-a-bash-script"
+        },
+        "show-scripts": {
+            "api": "show-scripts"
+        },
+        "install-package": {
+            "api": "install-package"
+        }
+    }
+}

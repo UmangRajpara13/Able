@@ -1,0 +1,37 @@
+{
+    "global": {
+        "open-vs-code": {
+            "cli": "code",
+            "debug": false
+        },
+        "open-settings": {
+            "cli": "gnome-control-center",
+            "debug": false
+        },
+        "open-file-explorer": {
+            "cli": "nautilus",
+            "debug": false
+        },
+        "jenny": {
+            "cli": "bash",
+            "args": ["jenny.sh"],
+            "debug": false
+        },
+        "william": {
+            "cli": "bash",
+            "args": ["william.sh"],
+            "debug": false
+        },
+        "charlie": {
+            "cli": "bash",
+            "args": ["charlie.sh"],
+            "debug": false
+        },
+        "brightness": {
+            "cli": "bash",
+            "args": ["brightness.sh"],
+            "debug": true
+        }
+
+    }
+}

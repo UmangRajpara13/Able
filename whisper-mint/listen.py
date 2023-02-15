@@ -73,7 +73,7 @@ async def record_buffer(**kwargs):
             if listening_initialized:
                 if timer.is_running():
                     if timer.is_timeout():
-                        threshold = 7.5
+                        threshold = 10
 
                         buffer = buffer[0:idx]
 
