@@ -2,36 +2,66 @@
     "global": {
         "open-vs-code": {
             "cli": "code",
-            "debug": false
+            "debug": false,
+            "location": "/home/user/able_store/scripts"
         },
         "open-settings": {
             "cli": "gnome-control-center",
-            "debug": false
+            "debug": false,
+            "location": "/home/user/able_store/scripts"
         },
         "open-file-explorer": {
             "cli": "nautilus",
-            "debug": false
+            "debug": false,
+            "location": "/home/user/able_store/scripts"
         },
         "jenny": {
             "cli": "bash",
-            "args": ["jenny.sh"],
-            "debug": false
+            "args": [
+                "jenny.sh"
+            ],
+            "debug": false,
+            "location": "/home/user/able_store/scripts"
         },
         "william": {
             "cli": "bash",
-            "args": ["william.sh"],
-            "debug": false
+            "args": [
+                "william.sh"
+            ],
+            "debug": false,
+            "location": "/home/user/able_store/scripts"
         },
         "charlie": {
             "cli": "bash",
-            "args": ["charlie.sh"],
-            "debug": false
+            "args": [
+                "charlie.sh"
+            ],
+            "debug": false,
+            "location": "/home/user/able_store/scripts"
         },
         "brightness": {
             "cli": "bash",
-            "args": ["brightness.sh"],
-            "debug": true
+            "args": [
+                "brightness.sh"
+            ],
+            "debug": true,
+            "location": "/home/user/able_store/scripts"
+        },
+        "brightness-maximum": {
+            "cli": "bash",
+            "args": [
+                "brightness-maximum.sh"
+            ],
+            "debug": true,
+            "location": "/home/user/able_store/scripts"
+        },
+        "brightness-minimum": {
+            "cli": "bash",
+            "args": [
+                "brightness-minimum.sh"
+            ],
+            "debug": true,
+            "location": "/home/user/able_store/scripts"
         }
-
     }
 }

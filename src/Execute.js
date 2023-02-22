@@ -1,6 +1,7 @@
 
 
 import { spawn } from 'child_process'
+import chalk from "chalk";
 
 
 
@@ -17,8 +18,10 @@ export function Execute(commandObj) {
                 ...(!commandObj.debug && {
                     detached: true,
                     stdio: "ignore"
+                }),
+                ...(commandObj.location && {
+                    cwd: commandObj.location
                 })
-                // cwd: join(process.cwd(), "./able_store/system"),
             }
         );
         if (commandObj.debug) {

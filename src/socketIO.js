@@ -132,7 +132,7 @@ function SetupWebSocketListener(port) {
               // return
 
               // var command = raw.replaceAll(" ", "-");
-              var activeApp = `${execSync("./activeApp.sh")}`
+              var activeApp = `${execSync("./src/activeApp.sh")}`
                 .split("=")[1]
                 .replace(", ", ".")
                 .replaceAll('"', "")

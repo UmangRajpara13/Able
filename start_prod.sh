@@ -2,4 +2,4 @@
 
 echo ParentPID $$ 
 
-NODE_ENV=production node able.js --parentPID=$$
+NODE_ENV=production node src/able.js --parentPID=$$
