@@ -47,10 +47,10 @@ function SetupWebSocketServer(port) {
       console.log(`!!! Connection Failed ${error}`);
     });
 
-    var actionScript, query, raw, action;
+    var  query, raw, action;
 
     ws.on("message", async (recievedData) => {
-      (actionScript = ""), (raw = "");
+       (raw = "");
 
       switch (`${recievedData}`.split(":")[0]) {
         case `id`:
@@ -259,7 +259,6 @@ function SetupWebSocketDevServer(port) {
     });
 
     ws.on("message", async (recievedData) => {
-      (actionScript = ""), (raw = "");
 
       switch (`${recievedData}`.split(":")[0]) {
         case `id`:
