@@ -93,7 +93,7 @@ function SetupWebSocketServer(port) {
             // open(`https://www.google.com/search?q=${query}`)
 
             const execute = spawn(`bash`, ["browse.sh", `Search=${query}`], {
-              cwd: "~/able_store/scripts",
+              cwd: join(homedir(),"able_store/scripts"),
               detached: true,
               stdio: "ignore",
             });
