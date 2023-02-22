@@ -3,10 +3,10 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+#custom
 pid.json
-
 __pycache__/
-
+*.wav
 
 # Node artifact files
 node_modules/

@@ -25,3 +25,4 @@ export function StartTranscription(port,argv) {
         console.log(`stt process exited with code ${code}`);
     });
 }
+

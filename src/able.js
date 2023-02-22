@@ -27,14 +27,21 @@ process.on("SIGINT", function () { });
 process.on("uncaughtException", (error) => {
   console.log("uncaught", error);
   if (error.code == "EADDRINUSE") {
-    execSync(`fuser -k ${port}/tcp`, (error, stdout, stderr) => {
+   if(error.port == 1111) execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
       console.log(stdout);
       console.log(stderr);
       if (error !== null) {
         console.log(`exec error: ${error}`);
       }
     });
-    throw "exit";
+    if(error.port == 2222) execSync(`fuser -k 2222/tcp`, (error, stdout, stderr) => {
+      console.log(stdout);
+      console.log(stderr);
+      if (error !== null) {
+        console.log(`exec error: ${error}`);
+      }
+    });
+    // throw "exit";
   }
 });
 

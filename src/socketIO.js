@@ -11,9 +11,11 @@ import { Execute } from "./Execute.js";
 
 const wm = new WMCtrl();
 
-var wss,
+var wss, wssDev,
   sttpid,
-  wsMap = new Map();
+  wsMap = new Map(),
+  wsMapDev = new Map(),
+  isDev = false
 
 
 var interrogativeWords = [
@@ -30,9 +32,9 @@ var interrogativeWords = [
 ];
 
 // var actionWords = ['refresh', 'clean']
-// var systemActions = ['jenny', 'charlie']
+var nativeActions = ['switch-to-development', 'switch-to-production', 'restart']
 
-function SetupWebSocketListener(port) {
+function SetupWebSocketServer(port) {
   wss.on("connection", async (ws, req) => {
     console.log(`Connection Established! -> (PORT=${port})`);
     ws = ws;
@@ -91,7 +93,7 @@ function SetupWebSocketListener(port) {
             // open(`https://www.google.com/search?q=${query}`)
 
             const execute = spawn(`bash`, ["browse.sh", `Search=${query}`], {
-              cwd: join(process.cwd(), "./able_store/scripts"),
+              cwd: "~/able_store/scripts",
               detached: true,
               stdio: "ignore",
             });
@@ -102,16 +104,54 @@ function SetupWebSocketListener(port) {
               .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
               .replace(/\s{2,}/g, " ");
 
+            process.stdout.write(chalk.yellow(`${isDev ? `[dev]` : `[prod]`}`));
             process.stdout.write(chalk.yellow(`(raw) ${raw} `));
 
 
             if (raw.length == 0) return;
 
             action = raw.replaceAll(" ", "-");
+
             var commandObj
+
+            // check if its native action
+            if (nativeActions.includes(action)) {
+              process.stdout.write(chalk.green(`(Native) ${action} `));
+
+              switch (action) {
+                case "switch-to-development":
+                  isDev = true
+                  break;
+                case "switch-to-production":
+                  isDev = false
+                  break;
+                case "restart":
+                  // execSync(`kill -9 ${sttpid}`);
+                  // spawn('bash', ['start_prod.sh'], { cwd: '.', detached: true, stdio: 'ignore' })
+                  // execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
+                  //   console.log(stdout);
+                  //   console.log(stderr);
+                  //   if (error !== null) {
+                  //     console.log(`exec error: ${error}`);
+                  //   }
+                  // });
+                  // execSync(`fuser -k 2222/tcp`, (error, stdout, stderr) => {
+                  //   console.log(stdout);
+                  //   console.log(stderr);
+                  //   if (error !== null) {
+                  //     console.log(`exec error: ${error}`);
+                  //   }
+                  // });
+                  break;
+                default:
+                  break;
+              }
+              return
+            }
             // check if its global action
             if (global_actions_keys.includes(action)) {
-              process.stdout.write(chalk.green(`(action) ${action} `));
+              process.stdout.write(chalk.green(`(Global) ${action} `));
+
 
               //   var allWindow = await wm.getWindows();
               //   allWindow = allWindow.map((winObj) => winObj.className);
@@ -126,9 +166,9 @@ function SetupWebSocketListener(port) {
               commandObj = global_actions[`${action}`]
 
               Execute(commandObj)
-
+              return
             } else {
-              console.log("exe app command");
+
               // return
 
               // var command = raw.replaceAll(" ", "-");
@@ -138,7 +178,7 @@ function SetupWebSocketListener(port) {
                 .replaceAll('"', "")
                 .trim();
 
-              console.log(activeApp)
+              process.stdout.write(chalk.green(`${action}->(App)${activeApp}`));
 
               if (!allAppsActions[activeApp]) return
               if (!allAppsActions[activeApp][action]) return
@@ -147,10 +187,13 @@ function SetupWebSocketListener(port) {
               console.log(commandObj)
 
               if (commandObj?.api) {
-                wsMap.get(activeApp)?.forEach((client) => {
+                isDev ? wsMapDev.get(activeApp)?.forEach((client) => {
                   // console.log(client)
                   client.send(commandObj.api);
-                });
+                }) : wsMap.get(activeApp)?.forEach((client) => {
+                  // console.log(client)
+                  client.send(commandObj.api);
+                })
               } else {
                 Execute(commandObj)
               }
@@ -202,15 +245,58 @@ function SetupWebSocketListener(port) {
   });
 }
 
+function SetupWebSocketDevServer(port) {
+  wssDev.on("connection", async (ws, req) => {
+    console.log(`DEV Connection Established! -> (PORT=${port})`);
+    ws = ws;
+
+    ws.on("close", () => {
+      console.log("DEV Connection Closed");
+    });
+
+    ws.on("error", (error) => {
+      console.log(`!!! DEV Connection Failed ${error}`);
+    });
+
+    ws.on("message", async (recievedData) => {
+      (actionScript = ""), (raw = "");
+
+      switch (`${recievedData}`.split(":")[0]) {
+        case `id`:
+          console.log(chalk.magenta(`\n${recievedData}\n`));
+
+          if (wsMapDev.get(`${recievedData}`.split(":")[1])) {
+            var allWsClients = wsMapDev.get(`${recievedData}`.split(":")[1]);
+            allWsClients.push(ws);
+            wsMapDev.set(`${recievedData}`.split(":")[1], allWsClients);
+          } else {
+            wsMapDev.set(`${recievedData}`.split(":")[1], [ws]);
+          }
+          console.log(
+            `Services Connected : ${wsMapDev.keys()}, ${wsMapDev.get(`${recievedData}`.split(":")[1]).length
+            }`
+          );
+          break;
+        default:
+          console.log(`Unhandled DEV-> ${recievedData}`);
+          break;
+      }
+    });
+  });
+}
+
 export function StartWebSocketServer(port, argv) {
   if (argv.stt != "OFF")
     process.on("SIGINT", () => {
       console.log(`SIGINT: kill transcription with PID:${sttpid}`);
       execSync(`kill -9 ${sttpid}`);
     });
+
   try {
     wss = new WebSocketServer({ port: port });
-    SetupWebSocketListener(port);
+    SetupWebSocketServer(port);
+    wssDev = new WebSocketServer({ port: 2222 });
+    SetupWebSocketDevServer(2222);
   } catch (error) {
     console.log(`error caught`, error);
   }
