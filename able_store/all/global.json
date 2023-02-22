@@ -62,6 +62,14 @@
             ],
             "debug": true,
             "location": "/home/user/able_store/scripts"
+        },
+        "create-a-new-project": {
+            "cli": "bash",
+            "args": [
+                "new-project.sh"
+            ],
+            "debug": true,
+            "location": "/home/user/able_store/scripts"
         }
     }
 }

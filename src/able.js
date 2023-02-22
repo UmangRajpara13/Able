@@ -27,14 +27,14 @@ process.on("SIGINT", function () { });
 process.on("uncaughtException", (error) => {
   console.log("uncaught", error);
   if (error.code == "EADDRINUSE") {
-   if(error.port == 1111) execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
+    if (error.port == 1111) execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
       console.log(stdout);
       console.log(stderr);
       if (error !== null) {
         console.log(`exec error: ${error}`);
       }
     });
-    if(error.port == 2222) execSync(`fuser -k 2222/tcp`, (error, stdout, stderr) => {
+    if (error.port == 2222) execSync(`fuser -k 2222/tcp`, (error, stdout, stderr) => {
       console.log(stdout);
       console.log(stderr);
       if (error !== null) {
@@ -58,29 +58,32 @@ try {
 function main() {
   // read actions
   if (!existsSync('~/able_store')) execSync('rsync -av ./able_store/ $HOME/able_store')
-  
-  const globalWatcher = watch(join(homedir(),'able_store/all/*'))
+
+  const globalWatcher = watch(join(homedir(), 'able_store/'))
 
   globalWatcher.on('all', (event, path) => {
     console.log(path)
     // if (path != 'global/global.json') return
     try {
-      readJson(path, (err, file) => {
-        // console.log(file, Object.keys(file))
+      if (path.endsWith('.json')) {
+        readJson(path, (err, file) => {
+          // console.log(file, Object.keys(file))
+          if (err) return
+          // allAppsActions = { ...allAppsActions, {appKey:appObject}        }; // Objects
+          if (path == join(homedir(), 'able_store/all/global.json')) {
+            global_actions = file.global; // Objects
+            global_actions_keys = Object.keys(global_actions); // its an array
+            console.log('added Global Actions')
+          } else {
+            var appKey = Object.keys(file)[0]
+            var appObject = file[`${appKey}`]
+            allAppsActions[appKey] = appObject
+            console.log(`added Actions for app, ${Object.keys(allAppsActions)}`)
+          }
+        });
+      }
+      execSync('rsync -av $HOME/able_store/ ./able_store/')
 
-        // allAppsActions = { ...allAppsActions, {appKey:appObject}        }; // Objects
-        if (path == join(homedir(),'able_store/all/global.json')) {
-          global_actions = file.global; // Objects
-          global_actions_keys = Object.keys(global_actions); // its an array
-          console.log('added Global Actions')
-        } else {
-          var appKey = Object.keys(file)[0]
-          var appObject = file[`${appKey}`]
-          allAppsActions[appKey] = appObject
-          console.log(`added Actions for app, ${Object.keys(allAppsActions)}`)
-        }
-        execSync('rsync -av $HOME/able_store/ ./able_store/')
-      });
     } catch (error) { }
   })
 

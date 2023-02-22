@@ -1,0 +1,16 @@
+{
+    "org.gnome.Nautilus.Org.gnome.Nautilus": {
+        "get-current-path": {
+            "cli": "bash",
+            "args":["currentNautiusPath.sh"],
+            "debug": true,
+            "location": "/home/user/.local/share/nautilus/scripts"
+        },
+        "open-in-code": {
+            "cli": "python3",
+            "args":["currNautPath.py"],
+            "debug": true,
+            "location": "/home/user/.local/share/nautilus/scripts"
+        }
+    }
+}
