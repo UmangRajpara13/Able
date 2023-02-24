@@ -7,9 +7,9 @@
   "scripts": {
     "dev": "sh start_dev.sh",
     "start": "sh start_prod.sh",
-    "engine_only": "node able.js --stt=OFF",
-    "stt": "whisper-mint/whisper/bin/python3 ./whisper-mint/listen.py 2222",
-    "deploy": "rsync -av --exclude='.git' --exclude='record.txt' ./ $HOME/able"
+    "engine_only": "node src/able.js --stt=OFF",
+    "stt_only": "whisper-mint/whisper/bin/python3 ./whisper-mint/main.py 1111",
+    "deploy": "rsync -av --exclude='.git' --exclude='record.txt' --exclude='pid.json' ./ $HOME/able"
   },
   "author": "umang",
   "license": "ISC",

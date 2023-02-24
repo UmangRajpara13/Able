@@ -2,30 +2,31 @@ import { execSync, exec, spawn } from "child_process";
 import { existsSync, unlink, unlinkSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { StartWebSocketServer } from "./socketIO.js";
+import { StartWebSocketServers } from "./socketIO.js";
 import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { readJson, outputJSONSync } from "fs-extra/esm";
 import { watch } from "chokidar";
+import { readJsonSync } from "fs-extra/esm";
 
 const argv = yargs(hideBin(process.argv)).parse();
-const port = process.env.NODE_ENV == "production" ? 1111 : 2222;
-
+// const port = process.env.NODE_ENV == "production" ? 1111 : 2222;
+const sttPort = 1111
 var global_actions, global_actions_keys;
 var allAppsActions = {}
 
 
 // collect commandline args
 console.log(argv);
-outputJSONSync("./pid.json", { parent: argv.parentPID, engine: process.pid });
+// outputJSONSync("./pid.json", { parent: argv.parentPID, engine: process.pid });
 
 // handle engine exit
-process.on("SIGINT", function () { });
+// process.on("SIGINT", function () { });
 
 // handle errors if any, apply trouble shoot and then run again
 process.on("uncaughtException", (error) => {
-  console.log("uncaught", error);
+  console.log("uncaught\n", error);
   if (error.code == "EADDRINUSE") {
     if (error.port == 1111) execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
       console.log(stdout);
@@ -57,9 +58,9 @@ try {
 
 function main() {
   // read actions
-  if (!existsSync('~/able_store')) execSync('rsync -av ./able_store/ $HOME/able_store')
+  // if (!existsSync('~/able_store')) execSync('rsync -av ./able_store/ $HOME/able_store')
 
-  const globalWatcher = watch(join(homedir(), 'able_store/'))
+  const globalWatcher = watch(join(process.cwd(), 'able_store/'))
 
   globalWatcher.on('all', (event, path) => {
     console.log(path)
@@ -82,15 +83,18 @@ function main() {
           }
         });
       }
-      execSync('rsync -av $HOME/able_store/ ./able_store/')
+      // execSync('rsync -av $HOME/able_store/ ./able_store/')
 
     } catch (error) { }
   })
 
   // start websocet server
-  StartWebSocketServer(port, argv);
+  StartWebSocketServers(argv);
   // start STT engine with cli args if any
-  if (argv.stt != "OFF") StartTranscription(port, argv);
+  const PIDs = readJsonSync('./pid.json')
+  console.log(PIDs,argv.stt != "OFF" || !PIDs.sttPid)
+  
+  if (argv.stt != "OFF" && !PIDs.sttPid) StartTranscription(sttPort, argv);
 }
 main();
 

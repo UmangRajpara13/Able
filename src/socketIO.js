@@ -236,6 +236,7 @@ function SetupWebSocketServer(port) {
           break;
         case `sttpid`:
           sttpid = `${recievedData}`.split(":")[1];
+          console.log(sttpid)
           break;
         default:
           console.log(`Unhandled -> ${recievedData}`);
@@ -284,16 +285,16 @@ function SetupWebSocketDevServer(port) {
   });
 }
 
-export function StartWebSocketServer(port, argv) {
+export function StartWebSocketServers(argv) {
   if (argv.stt != "OFF")
     process.on("SIGINT", () => {
-      console.log(`SIGINT: kill transcription with PID:${sttpid}`);
-      execSync(`kill -9 ${sttpid}`);
+      // console.log(`SIGINT: kill transcription with PID:${sttpid}`);
+      // execSync(`kill -9 ${sttpid}`);
     });
 
   try {
-    wss = new WebSocketServer({ port: port });
-    SetupWebSocketServer(port);
+    wss = new WebSocketServer({ port: 1111 });
+    SetupWebSocketServer(1111);
     wssDev = new WebSocketServer({ port: 2222 });
     SetupWebSocketDevServer(2222);
   } catch (error) {
