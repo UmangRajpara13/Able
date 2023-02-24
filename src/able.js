@@ -56,8 +56,8 @@ try {
   console.error(err);
 }
 
-function main() {
-  // read actions
+function main() { 
+  // read actions 
   // if (!existsSync('~/able_store')) execSync('rsync -av ./able_store/ $HOME/able_store')
 
   const globalWatcher = watch(join(process.cwd(), 'able_store/'))
