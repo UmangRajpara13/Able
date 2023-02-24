@@ -71,7 +71,7 @@ function main() {
           // console.log(file, Object.keys(file))
           if (err) return
           // allAppsActions = { ...allAppsActions, {appKey:appObject}        }; // Objects
-          if (path == join(homedir(), 'able_store/all/global.json')) {
+          if (path == join(process.cwd(), 'able_store/all/global.json')) {
             global_actions = file.global; // Objects
             global_actions_keys = Object.keys(global_actions); // its an array
             console.log('added Global Actions')

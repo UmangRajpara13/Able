@@ -2,26 +2,22 @@
     "global": {
         "open-vs-code": {
             "cli": "code",
-            "debug": false,
-            "location": "/home/user/able_store/scripts"
+            "debug": false
         },
         "open-settings": {
             "cli": "gnome-control-center",
-            "debug": false,
-            "location": "/home/user/able_store/scripts"
+            "debug": false
         },
-        "open-file-explorer": {
+        "open-configuration": {
             "cli": "nautilus",
-            "debug": false,
-            "location": "/home/user/able_store/scripts"
+            "args": [
+                "./able_store"
+            ],
+            "debug": false
         },
         "jenny": {
-            "cli": "bash",
-            "args": [
-                "jenny.sh"
-            ],
-            "debug": false,
-            "location": "/home/user/able_store/scripts"
+            "cli": "nautilus",
+            "debug": false
         },
         "william": {
             "cli": "bash",
