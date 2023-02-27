@@ -5,7 +5,7 @@
   "main": "able_engine.js",
   "type": "module",
   "scripts": {
-    "dev": "npx nodemon --watch src src/able.js",
+    "dev": "sh start_dev.sh",
     "start": "sh start_prod.sh",
     "engine_only": "node src/able.js --stt=OFF",
     "stt_only": "whisper-mint/whisper/bin/python3 ./whisper-mint/main.py 1111",

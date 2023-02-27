@@ -15,25 +15,35 @@
             ],
             "debug": false
         },
-        "jenny": {
+        "open-downloads": {
             "cli": "nautilus",
+            "args": [
+                "/home/user/Downloads"
+            ],
             "debug": false
         },
-        "william": {
+        "jenny": {
             "cli": "bash",
-            "args": [
-                "william.sh"
+            "args": ["jenny.sh"
             ],
-            "debug": false,
-            "location": "/home/user/able_store/scripts"
+            "debug": true,
+            "location": "able_store/scripts"
+
         },
-        "charlie": {
-            "cli": "bash",
+        "william": {
+            "cli": "/opt/firefox/firefox",
             "args": [
-                "charlie.sh"
             ],
             "debug": false,
-            "location": "/home/user/able_store/scripts"
+            "location": "able_store/scripts"
+        },
+        "jason": {
+            "cli": "code",
+            "args": [
+            
+            ],
+            "debug": false,
+            "location": "able_store/scripts"
         },
         "brightness": {
             "cli": "bash",
@@ -41,7 +51,7 @@
                 "brightness.sh"
             ],
             "debug": true,
-            "location": "/home/user/able_store/scripts"
+            "location": "able_store/scripts"
         },
         "brightness-maximum": {
             "cli": "bash",
@@ -49,7 +59,7 @@
                 "brightness-maximum.sh"
             ],
             "debug": true,
-            "location": "/home/user/able_store/scripts"
+            "location": "able_store/scripts"
         },
         "brightness-minimum": {
             "cli": "bash",
@@ -57,7 +67,7 @@
                 "brightness-minimum.sh"
             ],
             "debug": true,
-            "location": "/home/user/able_store/scripts"
+            "location": "able_store/scripts"
         },
         "create-a-new-project": {
             "cli": "bash",
@@ -65,7 +75,7 @@
                 "new-project.sh"
             ],
             "debug": true,
-            "location": "/home/user/able_store/scripts"
+            "location": "able_store/scripts"
         }
     }
 }

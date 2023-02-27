@@ -1,16 +1,18 @@
 import { execSync, exec, spawn } from 'child_process'
 
-var stt  
+var stt
+
+// process.on('SIGINT', () => {
+//     console.log(`SIGINT: kill STT Child Process `);
+//     stt?.stdin?.pause();
+//     stt?.kill('SIGKILL');
+// });
+
 
 export function StartTranscription(port, argv) {
     console.log('start stt service')
     // if (argv.stt != 'OFF')
-        // process.on('SIGINT', () => {
-        //     // console.log(`SIGINT: kill STT Child Process `);
-        //     // stt.stdin.pause();
-        //     // stt.kill();
-        //     process.abort()
-        // });
+      
 
     stt = spawn(`./whisper-mint/whisper/bin/python3`,
         [`./whisper-mint/main.py`, `${port}`],

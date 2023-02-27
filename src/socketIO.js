@@ -3,20 +3,24 @@ import { execSync, exec, spawn, spawnSync } from "child_process";
 import { homedir } from "os";
 import { join } from "path";
 import chalk from "chalk";
-import open from "open";
 import { WMCtrl } from "./WmCtrl/WmCtrl.js";
 import { appendFile } from "fs";
-import { allAppsActions, global_actions, global_actions_keys } from "./able.js";
+// import { allAppsActions, global_actions, global_actions_keys } from "./able.js";
 import { Execute } from "./Execute.js";
+import { readJsonSync, writeJsonSync } from "fs-extra/esm";
+import { watch } from "chokidar";
+import { readJson, outputJSONSync } from "fs-extra/esm";
+
 
 const wm = new WMCtrl();
-
+var global_actions, global_actions_keys;
+var allAppsActions = {}
 var wss, wssDev,
   sttpid,
   wsMap = new Map(),
   wsMapDev = new Map(),
-  isDev = false
-
+  isDev = false,
+  awareness = {}
 
 var interrogativeWords = [
   "what",
@@ -34,6 +38,46 @@ var interrogativeWords = [
 // var actionWords = ['refresh', 'clean']
 var nativeActions = ['switch-to-development', 'switch-to-production', 'restart']
 
+process.on("SIGINT", () => {
+  console.log(`SIGINT: kill transcription with PID:${sttpid}`);
+  var data = readJsonSync('./pid.json');
+  // Remove the key from the data
+  delete data.sttPid;
+  writeJsonSync('./pid.json', data);
+  execSync(`kill -9 ${sttpid}`); // SIGKILL to stt
+  process.abort()
+
+});
+
+// read actions 
+const globalWatcher = watch(join(process.cwd(), 'able_store/'))
+
+globalWatcher.on('all', (event, path) => {
+  // console.log(path) 
+  // if (path != 'global/global.json') return
+  try {
+    if (path.endsWith('.json')) {
+      readJson(path, (err, file) => {
+        // console.log(file, Object.keys(file))
+        if (err) return
+        // allAppsActions = { ...allAppsActions, {appKey:appObject}        }; // Objects
+        if (path == join(process.cwd(), 'able_store/all/global.json')) {
+          global_actions = file.global; // Objects
+          global_actions_keys = Object.keys(global_actions); // its an array
+          console.log('added Global Actions')
+        } else {
+          var appKey = Object.keys(file)[0]
+          var appObject = file[`${appKey}`]
+          allAppsActions[appKey] = appObject
+          console.log(`added Actions for app, ${Object.keys(allAppsActions)}`)
+        }
+      });
+    }
+  } catch (error) { }
+})
+
+
+
 function SetupWebSocketServer(port) {
   wss.on("connection", async (ws, req) => {
     console.log(`Connection Established! -> (PORT=${port})`);
@@ -47,24 +91,26 @@ function SetupWebSocketServer(port) {
       console.log(`!!! Connection Failed ${error}`);
     });
 
-    var  query, raw, action;
+    var query, raw, action;
 
     ws.on("message", async (recievedData) => {
-       (raw = "");
+      (raw = "");
+      var message = `${recievedData}`
 
-      switch (`${recievedData}`.split(":")[0]) {
+
+      switch (message.split(":")[0]) {
         case `id`:
           console.log(chalk.magenta(`\n${recievedData}\n`));
 
-          if (wsMap.get(`${recievedData}`.split(":")[1])) {
-            var allWsClients = wsMap.get(`${recievedData}`.split(":")[1]);
+          if (wsMap.get(message.split(":")[1])) {
+            var allWsClients = wsMap.get(message.split(":")[1]);
             allWsClients.push(ws);
-            wsMap.set(`${recievedData}`.split(":")[1], allWsClients);
+            wsMap.set(message.split(":")[1], allWsClients);
           } else {
-            wsMap.set(`${recievedData}`.split(":")[1], [ws]);
+            wsMap.set(message.split(":")[1], [ws]);
           }
           console.log(
-            `Services Connected : ${wsMap.keys()}, ${wsMap.get(`${recievedData}`.split(":")[1]).length
+            `Services Connected : ${wsMap.keys()}, ${wsMap.get(message.split(":")[1]).length
             }`
           );
           break;
@@ -73,14 +119,14 @@ function SetupWebSocketServer(port) {
 
           appendFile(
             "record.txt",
-            `${`${recievedData}`.split(":")[1].trim()}\n`,
+            `${message.split(":")[1].trim()}\n`,
             (err) => {
               if (err) throw err;
               // console.log('The "data to append" was appended to file!')
             }
           );
 
-          query = `${recievedData}`.split(":")[1].trim().toLowerCase();
+          query = message.split(":")[1].trim().toLowerCase();
 
           // check if its a Question
           if (interrogativeWords.some((startString) => query.startsWith(startString)) |
@@ -93,7 +139,7 @@ function SetupWebSocketServer(port) {
             // open(`https://www.google.com/search?q=${query}`)
 
             const execute = spawn(`bash`, ["browse.sh", `Search=${query}`], {
-              cwd: join(homedir(),"able_store/scripts"),
+              cwd: join(homedir(), "able_store/scripts"),
               detached: true,
               stdio: "ignore",
             });
@@ -235,11 +281,16 @@ function SetupWebSocketServer(port) {
           }
           break;
         case `sttpid`:
-          sttpid = `${recievedData}`.split(":")[1];
+          sttpid = message.split(":")[1];
           console.log(sttpid)
           break;
+        case `awareness`:
+          const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
+          awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
+          // awareness = {...awareness,JSON.parse(message.split(":")[1])}
+          break;
         default:
-          console.log(`Unhandled -> ${recievedData}`);
+          console.log(`Unhandled PROD-> ${recievedData}`);
           break;
       }
     });
@@ -260,37 +311,42 @@ function SetupWebSocketDevServer(port) {
     });
 
     ws.on("message", async (recievedData) => {
-
-      switch (`${recievedData}`.split(":")[0]) {
+      var message = `${recievedData}`
+      switch (message.split(":")[0]) {
         case `id`:
           console.log(chalk.magenta(`\n${recievedData}\n`));
 
-          if (wsMapDev.get(`${recievedData}`.split(":")[1])) {
-            var allWsClients = wsMapDev.get(`${recievedData}`.split(":")[1]);
+          if (wsMapDev.get(message.split(":")[1])) {
+            var allWsClients = wsMapDev.get(message.split(":")[1]);
             allWsClients.push(ws);
-            wsMapDev.set(`${recievedData}`.split(":")[1], allWsClients);
+            wsMapDev.set(message.split(":")[1], allWsClients);
           } else {
-            wsMapDev.set(`${recievedData}`.split(":")[1], [ws]);
+            wsMapDev.set(message.split(":")[1], [ws]);
           }
           console.log(
-            `Services Connected : ${wsMapDev.keys()}, ${wsMapDev.get(`${recievedData}`.split(":")[1]).length
+            `Services Connected : ${wsMapDev.keys()}, ${wsMapDev.get(message.split(":")[1]).length
             }`
           );
+          break;
+        case `awareness`:
+          const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
+          awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
+          global_actions = Object.assign({}, global_actions, Object.values(tmp)[0]["actions"])
+          var newActions = Object.keys(Object.values(tmp)[0]["actions"])
+          newActions = newActions.map(action => action.replaceAll(' ', '-'))
+          global_actions_keys = global_actions_keys.concat(newActions); // its an array
           break;
         default:
           console.log(`Unhandled DEV-> ${recievedData}`);
           break;
-      }    
+      }
     });
   });
 }
 
 export function StartWebSocketServers(argv) {
   // if (argv.stt != "OFF")
-    // process.on("SIGINT", () => {
-    //   // console.log(`SIGINT: kill transcription with PID:${sttpid}`);
-    //   // execSync(`kill -9 ${sttpid}`);
-    // });
+
 
   try {
     wss = new WebSocketServer({ port: 1111 });

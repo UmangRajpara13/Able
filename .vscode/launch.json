@@ -1,1 +1,23 @@
- 
+{
+    "configurations": [
+        {
+            "command": "npm run dev",
+            "name": "dev debug",
+            "request": "launch",
+            "type": "node-terminal"
+        },
+    {
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "name": "debug npm dev",
+        "program": "${workspaceFolder}/src/able.js",
+        "request": "launch",
+        "restart": true,
+        "runtimeExecutable": "nodemon",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    }
+    ]
+}

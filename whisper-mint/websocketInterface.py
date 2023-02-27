@@ -12,7 +12,7 @@ import numpy as np
 
 ws=None
 
-def transcrition():
+def transcription():
     try:
         # This launches a subprocess to decode audio while down-mixing and resampling as necessary.
         # Requires the ffmpeg CLI and `ffmpeg-python` package to be installed.
@@ -27,13 +27,14 @@ def transcrition():
     arr = np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
     result = model.transcribe(arr)
     os.remove("action.wav")
-    # print(result)
+    print(result["text"])
     asyncio.run(send_message('stt:' + result["text"]))
+    # send_message('stt:' + result["text"])
 
 async def record_buffer(**kwargs):
     print('Start Listening ...')
  
-    loop = asyncio.get_event_loop()
+    # loop = asyncio.get_event_loop()
     event = asyncio.Event()
     idx = 0
     idy = 0
@@ -100,7 +101,8 @@ async def record_buffer(**kwargs):
                             file.close()
                    
 
-                        transcrition()
+                        # asyncio.create_task()
+                        transcription()
 
                         listening_initialized = False
                         timer.stop()
@@ -163,7 +165,7 @@ async def connectWebSocket(uri):
             if another_task:
                 another_task.cancel()
                 another_task = None
-                print("Stopped another task")
+                print("Stopped another task. Retrying...")
             time.sleep(1)
 
 async def send_message(message):
