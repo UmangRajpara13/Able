@@ -12,6 +12,11 @@ import numpy as np
 
 ws=None
 
+
+# def Transcribe(arr):
+#     result = model.transcribe(arr)
+#     asyncio.run(send_message('stt:' + result["text"]))
+
 def transcription():
     try:
         # This launches a subprocess to decode audio while down-mixing and resampling as necessary.
@@ -25,20 +30,23 @@ def transcription():
         raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
 
     arr = np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
-    result = model.transcribe(arr)
     os.remove("action.wav")
+
+    result = model.transcribe(arr)
     print(result["text"])
-    asyncio.run(send_message('stt:' + result["text"]))
-    # send_message('stt:' + result["text"])
+    if(len(result["text"])): asyncio.run(send_message('stt:' + result["text"]))
+    # asyncio.create_task(Transcribe(arr))
+
+
 
 async def record_buffer(**kwargs):
-    print('Start Listening ...')
- 
+    print('Listening...')
+    # asyncio.run(send_message('info:' + 'Listening'))
     # loop = asyncio.get_event_loop()
     event = asyncio.Event()
     idx = 0
     idy = 0
-    threshold = 10
+    threshold = 3 #init volume
     listening_initialized = False
     timer = Timer()
     prefix_indata = np.empty((100_000_000, 1), dtype='float32')
@@ -66,7 +74,7 @@ async def record_buffer(**kwargs):
 
         # calc volume -> y
         y = np.sum(x)
-
+        # print(y)
         # volume control y > threshold
         if y > threshold:
             # print(y)
@@ -80,7 +88,7 @@ async def record_buffer(**kwargs):
                 # print('Start Listening')
 
                 listening_initialized = True
-                threshold = 5
+                threshold = 1 # lower vol after speaker started speaking
 
                 # here idx is 0
                 buffer[idx:100] = prefix_indata[-101:-1]
@@ -91,25 +99,40 @@ async def record_buffer(**kwargs):
             if listening_initialized:
                 if timer.is_running():
                     if timer.is_timeout():
-                        threshold = 10
+                        threshold = 3 # restore init volume
 
                         buffer = buffer[0:idx]
-
-                        with sf.SoundFile('./action.wav', mode='x', samplerate=16000,
-                                          channels=1) as file:
-                            file.write(buffer)
-                            file.close()
-                   
-
-                        # asyncio.create_task()
-                        transcription()
-
-                        listening_initialized = False
-                        timer.stop()
-                        idx = 0
-                        buffer = np.empty((100_000_000, 1), dtype='float32')
-                        prefix_indata = np.empty(
+                        if(len(buffer) < 10000): 
+                            print('noise',len(buffer))
+                            listening_initialized = False
+                            timer.stop()
+                            idx = 0
+                            buffer = np.empty((100_000_000, 1), dtype='float32')
+                            prefix_indata = np.empty(
                             (100_000_000, 1), dtype='float32')
+                        else:
+                            print('buff',len(buffer))
+
+                            try:
+                                os.remove('./action.wav')
+                            except:
+                                print('action.wav not exists')
+                            with sf.SoundFile('./action.wav', mode='x', samplerate=16000,
+                                            channels=1) as file:
+                                file.write(buffer)
+                                file.close()
+                    
+                            transcription()
+                            # asyncio.create_task(transcription())
+                            # loop.run_forever()
+                            # asyncio.create_task()
+
+                            listening_initialized = False
+                            timer.stop()
+                            idx = 0
+                            buffer = np.empty((100_000_000, 1), dtype='float32')
+                            prefix_indata = np.empty(
+                                (100_000_000, 1), dtype='float32')
 
                         # loop.call_soon_threadsafe(event.set)
                         # stream.abort()
@@ -139,7 +162,6 @@ async def record_buffer(**kwargs):
 async def connectWebSocket(uri):
     global ws
     another_task = None
-
     while True:
         try:
             async with websockets.connect(uri) as websocket:
@@ -149,23 +171,23 @@ async def connectWebSocket(uri):
 
                 if not another_task:
                     another_task = asyncio.create_task(record_buffer())
-                    print("Started another task")
+                    print("Started Listening task")
 
                 # Wait for the connection to close
                 await websocket.wait_closed()
 
                 # Handle the connection close event
                 print("Connection closed")
-                if another_task:
-                    another_task.cancel()
-                    another_task = None
-                    print("Stopped another task")
+                # if another_task:
+                #     another_task.cancel()
+                #     another_task = None
+                #     print("Stopped another task")
         except:
             print("Connection error. Retrying in 1 second.")
-            if another_task:
-                another_task.cancel()
-                another_task = None
-                print("Stopped another task. Retrying...")
+            # if another_task:
+            #     another_task.cancel()
+            #     another_task = None
+            #     print("Stopped another task. Retrying...")
             time.sleep(1)
 
 async def send_message(message):

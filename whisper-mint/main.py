@@ -37,7 +37,7 @@ def deregisterTranscriptionPid(signum, frame):
 signal.signal(signal.SIGHUP,deregisterTranscriptionPid)
 
 async def registerTranscriptionPid():
-    # Load JSON file
+    # Load JSON file 
     with open('pid.json', 'r') as f:
         data = json.load(f)
 
@@ -52,7 +52,8 @@ async def registerTranscriptionPid():
 async def main(frames=100_000_000, channels=1, dtype='float32', **kwargs):
     print(sys.argv[1:],os.getpid())
     await registerTranscriptionPid()
-    await connectWebSocket("ws://localhost:"+str(sys.argv[1]))
+    # await connectWebSocket("ws://localhost:"+str(sys.argv[1]))
+    await asyncio.create_task(connectWebSocket("ws://localhost:"+str(sys.argv[1])))
 
     # await record_buffer(**kwargs)
 

@@ -5,22 +5,14 @@ import { join } from "path";
 import chalk from "chalk";
 import { WMCtrl } from "./WmCtrl/WmCtrl.js";
 import { appendFile } from "fs";
-// import { allAppsActions, global_actions, global_actions_keys } from "./able.js";
-import { Execute } from "./Execute.js";
-import { readJsonSync, writeJsonSync } from "fs-extra/esm";
 import { watch } from "chokidar";
 import { readJson, outputJSONSync } from "fs-extra/esm";
+import { ActionProcessor, CrawlWeb } from "./sentenceProcessor.js";
 
 
 const wm = new WMCtrl();
-var global_actions, global_actions_keys;
-var allAppsActions = {}
-var wss, wssDev,
-  sttpid,
-  wsMap = new Map(),
-  wsMapDev = new Map(),
-  isDev = false,
-  awareness = {}
+var globalActions, globalActionsKeys, allActions = {}, allActionsKeys = []
+var wss, wssDev, sttpid, wsMap = new Map(), wsMapDev = new Map(), isDev = false, awareness = {}
 
 var interrogativeWords = [
   "what",
@@ -34,19 +26,23 @@ var interrogativeWords = [
   "why",
   "whose",
 ];
-
-// var actionWords = ['refresh', 'clean']
+  
 var nativeActions = ['switch-to-development', 'switch-to-production', 'restart']
-
+ 
 process.on("SIGINT", () => {
-  console.log(`SIGINT: kill transcription with PID:${sttpid}`);
-  var data = readJsonSync('./pid.json');
-  // Remove the key from the data
-  delete data.sttPid;
-  writeJsonSync('./pid.json', data);
-  execSync(`kill -9 ${sttpid}`); // SIGKILL to stt
-  process.abort()
 
+  const killPort = spawn(`bash`, ['killPort.sh'], {
+    cwd: './src/helper-scripts',
+    detached: true,
+    stdio: 'ignore',   
+  })
+  killPort.unref();
+
+  const restart = spawn(`schnell`, ['/home/user/Desktop/My Projects/able_dev/start_dev.sh'], {
+    detached: true,
+    stdio: 'ignore',
+  })
+  restart.unref();
 });
 
 // read actions 
@@ -60,16 +56,17 @@ globalWatcher.on('all', (event, path) => {
       readJson(path, (err, file) => {
         // console.log(file, Object.keys(file))
         if (err) return
-        // allAppsActions = { ...allAppsActions, {appKey:appObject}        }; // Objects
+        // allActions = { ...allActions, {appKey:appObject}        }; // Objects
         if (path == join(process.cwd(), 'able_store/all/global.json')) {
-          global_actions = file.global; // Objects
-          global_actions_keys = Object.keys(global_actions); // its an array
+          globalActions = file.global; // Objects
+          globalActionsKeys = Object.keys(globalActions); // its an array
           console.log('added Global Actions')
         } else {
           var appKey = Object.keys(file)[0]
           var appObject = file[`${appKey}`]
-          allAppsActions[appKey] = appObject
-          console.log(`added Actions for app, ${Object.keys(allAppsActions)}`)
+          allActions[appKey] = appObject
+          allActionsKeys = allActionsKeys.concat(Object.keys(appObject))
+          console.log(`added Actions for app, ${Object.keys(allActions)}`)
         }
       });
     }
@@ -127,38 +124,40 @@ function SetupWebSocketServer(port) {
           );
 
           query = message.split(":")[1].trim().toLowerCase();
+          raw = query
+            .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+            .replace(/\s{2,}/g, " ");
+
+          if (raw.length == 0) return;
+
+          process.stdout.write(chalk.yellow(`${isDev ? `[ D ]` : `[ P ]`}`));
+          process.stdout.write(chalk.yellow(`(raw) ${raw} `));
+
+          action = raw.replaceAll(" ", "-");
+          var commandObj
 
           // check if its a Question
           if (interrogativeWords.some((startString) => query.startsWith(startString)) |
             query.endsWith("?") |
             query.startsWith("google")
           ) {
+            // if query ends with ? and its a command.
+            if (query.endsWith('?') &&
+              (globalActionsKeys.includes(action) || allActionsKeys.includes(action))) {
+              commandObj = globalActions[action] || allActions[action]
+              ActionProcessor(commandObj)
+              return
+            }
+
             if (query.startsWith("google"))
               query = query.replace("google", "").trim();
 
             // open(`https://www.google.com/search?q=${query}`)
+            CrawlWeb(query)
 
-            const execute = spawn(`bash`, ["browse.sh", `Search=${query}`], {
-              cwd: join(homedir(), "able_store/scripts"),
-              detached: true,
-              stdio: "ignore",
-            });
-            execute.unref();
+
           } else {
-
-            raw = query
-              .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
-              .replace(/\s{2,}/g, " ");
-
-            process.stdout.write(chalk.yellow(`${isDev ? `[dev]` : `[prod]`}`));
-            process.stdout.write(chalk.yellow(`(raw) ${raw} `));
-
-
-            if (raw.length == 0) return;
-
-            action = raw.replaceAll(" ", "-");
-
-            var commandObj
+            // Native, Global, API, CLI
 
             // check if its native action
             if (nativeActions.includes(action)) {
@@ -195,7 +194,7 @@ function SetupWebSocketServer(port) {
               return
             }
             // check if its global action
-            if (global_actions_keys.includes(action)) {
+            if (globalActionsKeys.includes(action)) {
               process.stdout.write(chalk.green(`(Global) ${action} `));
 
 
@@ -209,40 +208,33 @@ function SetupWebSocketServer(port) {
               //     .split(",")[1]
               //     .replaceAll('"', "")
               //     .trim();
-              commandObj = global_actions[`${action}`]
+              commandObj = globalActions[action]
+              ActionProcessor(commandObj, isDev, undefined,
+                wsMap, wsMapDev)
 
-              Execute(commandObj)
               return
             } else {
 
-              // return
-
               // var command = raw.replaceAll(" ", "-");
-              var activeApp = `${execSync("./src/activeApp.sh")}`
+              var activeApp = `${execSync("./src/helper-scripts/activeApp.sh")}`
                 .split("=")[1]
                 .replace(", ", ".")
                 .replaceAll('"', "")
                 .trim();
 
-              process.stdout.write(chalk.green(`${action}->(App)${activeApp}`));
 
-              if (!allAppsActions[activeApp]) return
-              if (!allAppsActions[activeApp][action]) return
-              commandObj = allAppsActions[activeApp][action]
+              if (!allActions[activeApp]) return
+              if (!allActions[activeApp][action]) return
+
+              process.stdout.write(chalk.grey(`(App) ${activeApp} (action) ${action}`));
+
+              commandObj = allActions[activeApp][action]
 
               console.log(commandObj)
 
-              if (commandObj?.api) {
-                isDev ? wsMapDev.get(activeApp)?.forEach((client) => {
-                  // console.log(client)
-                  client.send(commandObj.api);
-                }) : wsMap.get(activeApp)?.forEach((client) => {
-                  // console.log(client)
-                  client.send(commandObj.api);
-                })
-              } else {
-                Execute(commandObj)
-              }
+              ActionProcessor(commandObj, isDev, activeApp,
+                wsMap, wsMapDev)
+
               // for (const word of raw.split(' ')) {
               //     if (actionWords.includes(word)) {
               //         actionScript = word
@@ -287,7 +279,10 @@ function SetupWebSocketServer(port) {
         case `awareness`:
           const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
           awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
-          // awareness = {...awareness,JSON.parse(message.split(":")[1])}
+          globalActions = Object.assign({}, globalActions, Object.values(tmp)[0]["actions"])
+          var newActions = Object.keys(Object.values(tmp)[0]["actions"])
+          newActions = newActions.map(action => action)
+          globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
           break;
         default:
           console.log(`Unhandled PROD-> ${recievedData}`);
@@ -331,10 +326,10 @@ function SetupWebSocketDevServer(port) {
         case `awareness`:
           const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
           awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
-          global_actions = Object.assign({}, global_actions, Object.values(tmp)[0]["actions"])
+          globalActions = Object.assign({}, globalActions, Object.values(tmp)[0]["actions"])
           var newActions = Object.keys(Object.values(tmp)[0]["actions"])
-          newActions = newActions.map(action => action.replaceAll(' ', '-'))
-          global_actions_keys = global_actions_keys.concat(newActions); // its an array
+          newActions = newActions.map(action => action)
+          globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
           break;
         default:
           console.log(`Unhandled DEV-> ${recievedData}`);

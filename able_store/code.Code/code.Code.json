@@ -1,0 +1,98 @@
+{
+  "code.Code": {
+    "say-hello": {
+      "paraphrases": [
+        "hello vs code"
+      ],
+      "api": "say-hello"
+    },
+    "new-window": {
+      "paraphrases": [
+        "open new window",
+        "create a new window"
+      ],
+      "debug": false,
+      "cli": "code",
+      "args": [
+        "--new-window"
+      ]
+    },
+    "initiate-staging-process": {
+      "paraphrases": [
+        "audit changes",
+        "initiate staging process",
+        "review changes"
+      ],
+      "api": "audit-changes"
+    },
+    "okay": {
+      "paraphrases": [
+        "looks good",
+        "alright",
+        "ok",
+        "okay"
+      ],
+      "api": "git-stage-current-file"
+    },
+    "stage-all-changes": {
+      "paraphrases": [
+        "stage all changes"
+      ],
+      "api": "stage-all-changes"
+    },
+    "create-a-checkpoint": {
+      "paraphrases": [
+        "commit changes",
+        "create a checkpoint",
+        "create a commit"
+      ],
+      "api": "git-commit"
+    },
+    "upload": {
+      "paraphrases": [
+        "push changes",
+        "upload"
+      ],
+      "api": "git-push"
+    },
+    "commit-changes-and-push": {
+      "paraphrases": [
+        "commit changes and push"
+      ],
+      "api": "commit-changes-and-push"
+    },
+    "open-folder": {
+      "paraphrases": [
+        "open a new folder",
+        "open folder"
+      ],
+      "api": "open-folder"
+    },
+    "create-a-bash-script": {
+      "paraphrases": [
+        "create a bash script"
+      ],
+      "api": "create-a-bash-script"
+    },
+    "show-scripts": {
+      "paraphrases": [
+        "show scripts"
+      ],
+      "api": "show-scripts"
+    },
+    "install-package": {
+      "paraphrases": [
+        "install package",
+        "install a package"
+      ],
+      "api": "install-package"
+    },
+    "create-a-new-file": {
+      "paraphrases": [
+        "create a new file",
+        "create a file"
+      ],
+      "api": "create-a-new-file"
+    }
+  }
+}

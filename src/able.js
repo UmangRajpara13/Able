@@ -5,46 +5,37 @@ import { join } from "path";
 import { StartWebSocketServers } from "./socketIO.js";
 import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import { readJson, outputJSONSync } from "fs-extra/esm";
+ import { hideBin } from "yargs/helpers";
 import { readJsonSync } from "fs-extra/esm";
+import { cwd } from "process";
+import { WindowManager } from "./helper-scripts/winctrl.js";
 
 const argv = yargs(hideBin(process.argv)).parse();
 // const port = process.env.NODE_ENV == "production" ? 1111 : 2222;
 const sttPort = 1111
 
-
-
 // collect commandline args
-console.log(argv); 
+console.log(argv);
 // outputJSONSync("./pid.json", { parent: argv.parentPID, engine: process.pid });
 
 // handle engine exit
-process.on("SIGINT", function () {console.log('SIGINT-able') });
+// process.on("SIGINT", function () { console.log('SIGINT-able') });
+
 // process.once('SIGUSR2', function () {
 //   console.log('SIGUSR2')
 // });
 
-
+   
 // handle errors if any, apply trouble shoot and then run again
 process.on("uncaughtException", (error) => {
   console.log("uncaught\n", error);
   if (error.code == "EADDRINUSE") {
-    if (error.port == 1111) execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
-      console.log(stdout);
-      console.log(stderr);
-      if (error !== null) {
-        console.log(`exec error: ${error}`);
-      }
-    });
-    if (error.port == 2222) execSync(`fuser -k 2222/tcp`, (error, stdout, stderr) => {
-      console.log(stdout);
-      console.log(stderr);
-      if (error !== null) {
-        console.log(`exec error: ${error}`);
-      }
-    });
-    // throw "exit";
+    const kill = spawn(`bash`, ['killPort.sh'], {
+      cwd: './src/helper-scripts',
+      detached: true,  
+      stdio: 'ignore',
+    })
+    kill.unref();
   }
 });
 
@@ -58,16 +49,15 @@ try {
   console.error(err);
 }
 
-function main() { 
-  
+function main() {
+  WindowManager()
   // start websocet server
   StartWebSocketServers(argv);
   // start STT engine with cli args if any
-  const PIDs = readJsonSync('./pid.json')
-  console.log(PIDs,argv.stt != "OFF" && !PIDs.sttPid)
-  
-  if (argv.stt != "OFF" && !PIDs.sttPid) StartTranscription(sttPort, argv);
-}
-main();
+  console.log(!execSync(`nvidia-smi | grep python | awk '{print $5}' | cut -d '.' -f 1`).toString())
+  if (!execSync(`nvidia-smi | grep python | awk '{print $5}' | cut -d '.' -f 1`).toString()) {
+    if (argv.stt != "OFF") StartTranscription(sttPort, argv);  
+  }
+} 
 
-// export { global_actions, global_actions_keys, allAppsActions };
+main();  

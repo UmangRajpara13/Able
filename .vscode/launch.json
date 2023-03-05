@@ -4,7 +4,7 @@
             "command": "npm run dev",
             "name": "dev debug",
             "request": "launch",
-            "type": "node-terminal"
+            "type":  "node-terminal",
         },
     {
         "console": "integratedTerminal",
