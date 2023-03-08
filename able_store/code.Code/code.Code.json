@@ -2,14 +2,14 @@
   "code.Code": {
     "say-hello": {
       "paraphrases": [
-        "hello vs code"
+        "hello vs code",
+        "hello jason"
       ],
       "api": "say-hello"
     },
     "new-window": {
       "paraphrases": [
-        "open new window",
-        "create a new window"
+        "new window"
       ],
       "debug": false,
       "cli": "code",
@@ -21,7 +21,8 @@
       "paraphrases": [
         "audit changes",
         "initiate staging process",
-        "review changes"
+        "review changes",
+        "save this work"
       ],
       "api": "audit-changes"
     },
@@ -63,14 +64,13 @@
     },
     "open-folder": {
       "paraphrases": [
-        "open a new folder",
         "open folder"
       ],
       "api": "open-folder"
     },
     "create-a-bash-script": {
       "paraphrases": [
-        "create a bash script"
+        "new bash script"
       ],
       "api": "create-a-bash-script"
     },

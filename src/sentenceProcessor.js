@@ -13,7 +13,7 @@ export function CrawlWeb(query) {
     browse.unref();
 }
 
-export function ActionProcessor(commandObj, isDev = false, activeApp = undefined,
+export function ActionProcessor(commandObj, wsChannel, activeApp = undefined,
     wsMap = undefined, wsMapDev = undefined) {
 
 
@@ -54,7 +54,7 @@ export function ActionProcessor(commandObj, isDev = false, activeApp = undefined
     }
 
     if (commandObj?.api && !commandObj?.url) {
-        isDev ? wsMapDev.get(activeApp)?.forEach((client) => {
+        wsChannel === 'development' ? wsMapDev.get(activeApp)?.forEach((client) => {
             // console.log(client)
             client.send(commandObj.api);
         }) : wsMap.get(activeApp)?.forEach((client) => {
@@ -66,8 +66,8 @@ export function ActionProcessor(commandObj, isDev = false, activeApp = undefined
 
     // TODO: this should automatically users default browser and use that WM_CLASS
     if (commandObj?.url && commandObj?.api) {
-        execSync('bash ./src/helper-scripts/william.sh')   
-        isDev ? wsMapDev?.get('Navigator.firefox-aurora')?.forEach((client) => {
+        // execSync('bash ./src/helper-scripts/william.sh')   
+        wsChannel === 'development' ? wsMapDev?.get('Navigator.firefox-aurora')?.forEach((client) => {
             // console.log(client)
             client.send(`${commandObj.api},${commandObj.url}`);
         }) : wsMap?.get('Navigator.firefox-aurora')?.forEach((client) => {

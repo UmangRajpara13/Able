@@ -5,7 +5,7 @@ import { join } from "path";
 import { StartWebSocketServers } from "./socketIO.js";
 import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
- import { hideBin } from "yargs/helpers";
+import { hideBin } from "yargs/helpers";
 import { readJsonSync } from "fs-extra/esm";
 import { cwd } from "process";
 import { WindowManager } from "./helper-scripts/winctrl.js";
@@ -25,14 +25,14 @@ console.log(argv);
 //   console.log('SIGUSR2')
 // });
 
-   
+
 // handle errors if any, apply trouble shoot and then run again
 process.on("uncaughtException", (error) => {
   console.log("uncaught\n", error);
   if (error.code == "EADDRINUSE") {
     const kill = spawn(`bash`, ['killPort.sh'], {
       cwd: './src/helper-scripts',
-      detached: true,  
+      detached: true,
       stdio: 'ignore',
     })
     kill.unref();
@@ -58,6 +58,6 @@ function main() {
   if (!execSync(`nvidia-smi | grep python | awk '{print $5}' | cut -d '.' -f 1`).toString()) {
     if (argv.stt != "OFF") StartTranscription(sttPort, argv);  
   }
-} 
+}
 
 main();  

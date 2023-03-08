@@ -1,3 +1,6 @@
+* schnell run node scripts from cli
+* pass script args through cli 
+
 # Presets
 > Only code very essential functionalities, as a rule of thumb consider implementing functionality you would want 
 in a given moment.

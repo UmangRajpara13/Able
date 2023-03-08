@@ -8,11 +8,12 @@ import { appendFile } from "fs";
 import { watch } from "chokidar";
 import { readJson, outputJSONSync } from "fs-extra/esm";
 import { ActionProcessor, CrawlWeb } from "./sentenceProcessor.js";
+import { cwd } from "process";
 
 
 const wm = new WMCtrl();
 var globalActions, globalActionsKeys, allActions = {}, allActionsKeys = []
-var wss, wssDev, sttpid, wsMap = new Map(), wsMapDev = new Map(), isDev = false, awareness = {}
+var wss, wssDev, sttpid, wsMap = new Map(), wsMapDev = new Map(), wsChannel = 'production', awareness = {}
 
 var interrogativeWords = [
   "what",
@@ -26,19 +27,20 @@ var interrogativeWords = [
   "why",
   "whose",
 ];
-  
-var nativeActions = ['switch-to-development', 'switch-to-production', 'restart']
- 
+
+var nativeActions = ['switch-to-development', 'switch-to-production', 'open-your-source-code']
+var sttRecipient = null
+
 process.on("SIGINT", () => {
 
   const killPort = spawn(`bash`, ['killPort.sh'], {
     cwd: './src/helper-scripts',
     detached: true,
-    stdio: 'ignore',   
+    stdio: 'ignore',
   })
   killPort.unref();
 
-  const restart = spawn(`schnell`, ['/home/user/Desktop/My Projects/able_dev/start_dev.sh'], {
+  const restart = spawn(`schnell`, ['/home/user/Desktop/My Projects/able_dev/engine.sh'], {
     detached: true,
     stdio: 'ignore',
   })
@@ -80,13 +82,9 @@ function SetupWebSocketServer(port) {
     console.log(`Connection Established! -> (PORT=${port})`);
     ws = ws;
 
-    ws.on("close", () => {
-      console.log("Connection Closed");
-    });
+    ws.on("close", () => { console.log("Connection Closed"); });
 
-    ws.on("error", (error) => {
-      console.log(`!!! Connection Failed ${error}`);
-    });
+    ws.on("error", (error) => { console.log(`!!! Connection Failed ${error}`); });
 
     var query, raw, action;
 
@@ -112,7 +110,6 @@ function SetupWebSocketServer(port) {
           );
           break;
         case `stt`:
-          console.log(chalk.blue(`\n${recievedData}\n`));
 
           appendFile(
             "record.txt",
@@ -123,14 +120,32 @@ function SetupWebSocketServer(port) {
             }
           );
 
+          query = message.split(":")[1].trim();
+          process.stdout.write(chalk.yellow(`${wsChannel === 'development' ? `[ D ]` : `[ P ]`}`));
+
+          // if sttRecipient return
+          if (sttRecipient) {
+            console.log(chalk.yellowBright(`redirecting \n${recievedData}\n`));
+
+            wsChannel === 'development' ? wsMapDev?.get(sttRecipient)?.forEach((client) => {
+              // console.log(client)
+              client.send(`sttRedirect,${query}`);
+            }) : wsMap?.get(sttRecipient)?.forEach((client) => {
+              // console.log(client)
+              client.send(`sttRedirect,${query}`);
+            })
+            return
+          }
           query = message.split(":")[1].trim().toLowerCase();
+
+          console.log(chalk.blue(`\n${recievedData}\n`));
+
           raw = query
             .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
             .replace(/\s{2,}/g, " ");
 
           if (raw.length == 0) return;
 
-          process.stdout.write(chalk.yellow(`${isDev ? `[ D ]` : `[ P ]`}`));
           process.stdout.write(chalk.yellow(`(raw) ${raw} `));
 
           action = raw.replaceAll(" ", "-");
@@ -165,14 +180,14 @@ function SetupWebSocketServer(port) {
 
               switch (action) {
                 case "switch-to-development":
-                  isDev = true
+                  wsChannel = 'development'
                   break;
                 case "switch-to-production":
-                  isDev = false
+                  wsChannel = 'production'
                   break;
-                case "restart":
+                case "open-your-source-code":
                   // execSync(`kill -9 ${sttpid}`);
-                  // spawn('bash', ['start_prod.sh'], { cwd: '.', detached: true, stdio: 'ignore' })
+                  spawn('code', ['-r', '.'], { cwd: cwd(), detached: true, stdio: 'ignore' })
                   // execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
                   //   console.log(stdout);
                   //   console.log(stderr);
@@ -209,7 +224,7 @@ function SetupWebSocketServer(port) {
               //     .replaceAll('"', "")
               //     .trim();
               commandObj = globalActions[action]
-              ActionProcessor(commandObj, isDev, undefined,
+              ActionProcessor(commandObj, wsChannel, undefined,
                 wsMap, wsMapDev)
 
               return
@@ -232,7 +247,7 @@ function SetupWebSocketServer(port) {
 
               console.log(commandObj)
 
-              ActionProcessor(commandObj, isDev, activeApp,
+              ActionProcessor(commandObj, wsChannel, activeApp,
                 wsMap, wsMapDev)
 
               // for (const word of raw.split(' ')) {
@@ -284,6 +299,15 @@ function SetupWebSocketServer(port) {
           newActions = newActions.map(action => action)
           globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
           break;
+        case `requestSTT`:
+          sttRecipient = JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"]
+          console.log('requestSTT', sttRecipient)
+
+          break;
+        case `surrenderSTT`:
+          console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"])
+          sttRecipient = null
+          break;
         default:
           console.log(`Unhandled PROD-> ${recievedData}`);
           break;
@@ -324,12 +348,26 @@ function SetupWebSocketDevServer(port) {
           );
           break;
         case `awareness`:
+          console.log(message)
           const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
           awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
           globalActions = Object.assign({}, globalActions, Object.values(tmp)[0]["actions"])
           var newActions = Object.keys(Object.values(tmp)[0]["actions"])
           newActions = newActions.map(action => action)
           globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
+          break;
+        case `requestSTT`:
+          sttRecipient = JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"]
+          console.log('requestSTT', sttRecipient)
+
+          break;
+        case `surrenderSTT`:
+          console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"])
+          sttRecipient = null
+          break;
+        case `switchWsChannel`:
+          console.log('switchWsChannel', message.split(":")[1])
+          wsChannel = message.split(":")[1] === 'development' ? 'development' : 'production'
           break;
         default:
           console.log(`Unhandled DEV-> ${recievedData}`);

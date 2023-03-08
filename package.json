@@ -5,11 +5,11 @@
   "main": "able_engine.js",
   "type": "module",
   "scripts": {
-    "dev": "sh start_dev.sh",
+    "dev": "bash engine.sh",
     "start": "sh start_prod.sh",
     "engine_only": "npx nodemon --watch src src/able.js --stt=OFF",
     "stt_only": "whisper-mint/whisper/bin/python3 ./whisper-mint/main.py 1111",
-    "deploy": "rsync -av --exclude='.git' --exclude='record.txt' --exclude='pid.json' ./ $HOME/able"
+    "concurrently": "concurrently --kill-others \"npm run start_engine\" \"npm run start_stt\""
   },
   "author": "umang",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
+    "concurrently": "^7.6.0",
     "nodemon": "^2.0.20"
   }
 }
