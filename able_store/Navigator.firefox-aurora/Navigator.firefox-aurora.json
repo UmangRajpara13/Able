@@ -1,0 +1,8 @@
+{
+    "Navigator.firefox-aurora": {
+        "close-inactive-tabs": {
+            "paraphrases":["close inactive tabs"],
+            "api": "CloseInactiveTabs"
+        }
+    }
+}

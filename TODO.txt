@@ -1,2 +1,14 @@
+* schnell run node scripts from cli
+* pass script args through cli 
+
+# Presets
+> Only code very essential functionalities, as a rule of thumb consider implementing functionality you would want 
+in a given moment.
+> see if its programmatically possible to implement.
+> if so, Measure the length and/or complexity of the code required to implement a certain functionality.
+> implement only if its feasible to implement in least amount of time.
+
+
+
 start at login
 start on boot

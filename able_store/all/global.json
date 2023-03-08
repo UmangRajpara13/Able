@@ -1,0 +1,137 @@
+{
+  "global": {
+    "open-vs-code": {
+      "paraphrases": [
+        "open vs code"
+      ],
+      "cli": "code",
+      "debug": false
+    },
+    "open-firefox-extension-project": {
+      "paraphrases": [],
+      "cli": "code",
+      "args": [
+        "-r",
+        "."
+      ],
+      "location": "/home/user/Desktop/My Projects/able_firefox",
+      "debug": false
+    },
+    "open-vs-code-extension-project": {
+      "paraphrases": [],
+      "cli": "code",
+      "args": [
+        "-r",
+        "."
+      ],
+      "location": "/home/user/Desktop/My Projects/able_code",
+      "debug": false
+    },
+    "open-settings": {
+      "paraphrases": [
+        "open settings"
+      ],
+      "cli": "gnome-control-center",
+      "debug": false
+    },
+    "open-configuration": {
+      "paraphrases": [
+        "open configuration"
+      ],
+      "cli": "nautilus",
+      "args": [
+        "able_store"
+      ],
+      "debug": false
+    },
+    "open-downloads": {
+      "paraphrases": [
+        "open downloads"
+      ],
+      "cli": "nautilus",
+      "args": [
+        "/home/user/Downloads"
+      ],
+      "debug": false
+    },
+    "jenny": {
+      "paraphrases": [
+        "jenny"
+      ],
+      "cli": "bash",
+      "args": [
+        "jenny.sh"
+      ],
+      "debug": false,
+      "location": "able_store/all/scripts"
+    },
+    "william": {
+      "paraphrases": [
+        "william"
+      ],
+      "cli": "bash",
+      "args": [
+        "william.sh"
+      ],
+      "debug": false,
+      "location": "able_store/all/scripts"
+    },
+    "jason": {
+      "paraphrases": [
+        "jason"
+      ],
+      "cli": "bash",
+      "args": [
+        "jason.sh"
+      ],
+      "debug": false,
+      "location": "able_store/all/scripts"
+    },
+    "brightness-maximum": {
+      "paraphrases": [
+        "brightness maximum",
+        "increase brightness"
+      ],
+      "cli": "bash",
+      "args": [
+        "brightness-maximum.sh"
+      ],
+      "debug": false,
+      "location": "able_store/all/scripts"
+    },
+    "brightness-minimum": {
+      "paraphrases": [
+        "brightness minimum",
+        "lower brightness"
+      ],
+      "cli": "bash",
+      "args": [
+        "brightness-minimum.sh"
+      ],
+      "debug": false,
+      "location": "able_store/all/scripts"
+    },
+    "create-a-new-project": {
+      "paraphrases": [
+        "new project"
+      ],
+      "cli": "bash",
+      "args": [
+        "new-project.sh"
+      ],
+      "debug": false,
+      "location": "able_store/all/scripts"
+    },
+    "lock-screen": {
+      "paraphrases": [
+        "lock screen",
+        "lock computer"
+      ],
+      "cli": "xdg-screensaver",
+      "args": [
+        "lock"
+      ],
+      "debug": false
+    }
+  }
+}

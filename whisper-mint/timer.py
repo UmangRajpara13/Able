@@ -37,7 +37,7 @@ class Timer:
 
     def is_timeout(self):
 
-        if time.perf_counter() - self._start_time > 1:
+        if time.perf_counter() - self._start_time > 0.5:
             return True
         return False
         
