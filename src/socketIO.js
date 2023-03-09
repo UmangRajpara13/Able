@@ -13,7 +13,7 @@ import { cwd } from "process";
 
 const wm = new WMCtrl();
 var globalActions, globalActionsKeys, allActions = {}, allActionsKeys = []
-var wss, wssDev, sttpid, wsMap = new Map(), wsMapDev = new Map(), wsChannel = 'production', awareness = {}
+var wss, sttpid, wsMap = new Map(), awareness = {}
 
 var interrogativeWords = [
   "what",
@@ -59,19 +59,21 @@ globalWatcher.on('all', (event, path) => {
         // console.log(file, Object.keys(file))
         if (err) return
         // allActions = { ...allActions, {appKey:appObject}        }; // Objects
+
+        var appKey = Object.keys(file)[0]
+        var appObject = file[`${appKey}`]
+        allActions[appKey] = appObject
+        allActionsKeys = allActionsKeys.concat(Object.keys(appObject))
+
         if (path == join(process.cwd(), 'able_store/all/global.json')) {
           globalActions = file.global; // Objects
           globalActionsKeys = Object.keys(globalActions); // its an array
           console.log('added Global Actions')
-        } else {
-          var appKey = Object.keys(file)[0]
-          var appObject = file[`${appKey}`]
-          allActions[appKey] = appObject
-          allActionsKeys = allActionsKeys.concat(Object.keys(appObject))
-          console.log(`added Actions for app, ${Object.keys(allActions)}`)
         }
       });
     }
+    console.log(`added Actions for app, ${Object.keys(allActions)}`)
+
   } catch (error) { }
 })
 
@@ -104,6 +106,7 @@ function SetupWebSocketServer(port) {
           } else {
             wsMap.set(message.split(":")[1], [ws]);
           }
+          awareness = { ...awareness, [message.split(":")[1]]: {} }
           console.log(
             `Services Connected : ${wsMap.keys()}, ${wsMap.get(message.split(":")[1]).length
             }`
@@ -121,16 +124,12 @@ function SetupWebSocketServer(port) {
           );
 
           query = message.split(":")[1].trim();
-          process.stdout.write(chalk.yellow(`${wsChannel === 'development' ? `[ D ]` : `[ P ]`}`));
 
           // if sttRecipient return
           if (sttRecipient) {
             console.log(chalk.yellowBright(`redirecting \n${recievedData}\n`));
 
-            wsChannel === 'development' ? wsMapDev?.get(sttRecipient)?.forEach((client) => {
-              // console.log(client)
-              client.send(`sttRedirect,${query}`);
-            }) : wsMap?.get(sttRecipient)?.forEach((client) => {
+            wsMap?.get(sttRecipient)?.forEach((client) => {
               // console.log(client)
               client.send(`sttRedirect,${query}`);
             })
@@ -179,29 +178,8 @@ function SetupWebSocketServer(port) {
               process.stdout.write(chalk.green(`(Native) ${action} `));
 
               switch (action) {
-                case "switch-to-development":
-                  wsChannel = 'development'
-                  break;
-                case "switch-to-production":
-                  wsChannel = 'production'
-                  break;
                 case "open-your-source-code":
-                  // execSync(`kill -9 ${sttpid}`);
                   spawn('code', ['-r', '.'], { cwd: cwd(), detached: true, stdio: 'ignore' })
-                  // execSync(`fuser -k 1111/tcp`, (error, stdout, stderr) => {
-                  //   console.log(stdout);
-                  //   console.log(stderr);
-                  //   if (error !== null) {
-                  //     console.log(`exec error: ${error}`);
-                  //   }
-                  // });
-                  // execSync(`fuser -k 2222/tcp`, (error, stdout, stderr) => {
-                  //   console.log(stdout);
-                  //   console.log(stderr);
-                  //   if (error !== null) {
-                  //     console.log(`exec error: ${error}`);
-                  //   }
-                  // });
                   break;
                 default:
                   break;
@@ -224,8 +202,8 @@ function SetupWebSocketServer(port) {
               //     .replaceAll('"', "")
               //     .trim();
               commandObj = globalActions[action]
-              ActionProcessor(commandObj, wsChannel, undefined,
-                wsMap, wsMapDev)
+              ActionProcessor(commandObj, undefined,
+                wsMap)
 
               return
             } else {
@@ -237,7 +215,6 @@ function SetupWebSocketServer(port) {
                 .replaceAll('"', "")
                 .trim();
 
-
               if (!allActions[activeApp]) return
               if (!allActions[activeApp][action]) return
 
@@ -247,8 +224,8 @@ function SetupWebSocketServer(port) {
 
               console.log(commandObj)
 
-              ActionProcessor(commandObj, wsChannel, activeApp,
-                wsMap, wsMapDev)
+              ActionProcessor(commandObj, activeApp,
+                wsMap)
 
               // for (const word of raw.split(' ')) {
               //     if (actionWords.includes(word)) {
@@ -292,100 +269,50 @@ function SetupWebSocketServer(port) {
           console.log(sttpid)
           break;
         case `awareness`:
-          const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
-          awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
-          globalActions = Object.assign({}, globalActions, Object.values(tmp)[0]["actions"])
-          var newActions = Object.keys(Object.values(tmp)[0]["actions"])
-          newActions = newActions.map(action => action)
-          globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
-          break;
-        case `requestSTT`:
-          sttRecipient = JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"]
-          console.log('requestSTT', sttRecipient)
+          // const dataPacket = JSON.parse(message.substring(message.indexOf(':') + 1))
+          // console.log(dataPacket)
+          if (dataPacket.type == 'inform') {
 
-          break;
-        case `surrenderSTT`:
-          console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"])
-          sttRecipient = null
-          break;
-        default:
-          console.log(`Unhandled PROD-> ${recievedData}`);
-          break;
-      }
-    });
-  });
-}
+            const updatedInfo = Object.assign({}, awareness[dataPacket.id], dataPacket["payload"])
+            // console.log(updatedInfo)
+            awareness = {
+              ...awareness,
+              [dataPacket.id]: Object.assign({}, awareness[dataPacket.id],updatedInfo)
+            }
+            console.log(awareness[dataPacket.id])
 
-function SetupWebSocketDevServer(port) {
-  wssDev.on("connection", async (ws, req) => {
-    console.log(`DEV Connection Established! -> (PORT=${port})`);
-    ws = ws;
-
-    ws.on("close", () => {
-      console.log("DEV Connection Closed");
-    });
-
-    ws.on("error", (error) => {
-      console.log(`!!! DEV Connection Failed ${error}`);
-    });
-
-    ws.on("message", async (recievedData) => {
-      var message = `${recievedData}`
-      switch (message.split(":")[0]) {
-        case `id`:
-          console.log(chalk.magenta(`\n${recievedData}\n`));
-
-          if (wsMapDev.get(message.split(":")[1])) {
-            var allWsClients = wsMapDev.get(message.split(":")[1]);
-            allWsClients.push(ws);
-            wsMapDev.set(message.split(":")[1], allWsClients);
-          } else {
-            wsMapDev.set(message.split(":")[1], [ws]);
           }
-          console.log(
-            `Services Connected : ${wsMapDev.keys()}, ${wsMapDev.get(message.split(":")[1]).length
-            }`
-          );
-          break;
-        case `awareness`:
-          console.log(message)
-          const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
-          awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
-          globalActions = Object.assign({}, globalActions, Object.values(tmp)[0]["actions"])
-          var newActions = Object.keys(Object.values(tmp)[0]["actions"])
-          newActions = newActions.map(action => action)
-          globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
+          if (dataPacket.type == 'actions') {
+            const actions = Object.assign({}, allActions[dataPacket.scope], dataPacket["payload"])
+            // console.log(actions)
+            allActions = { ...allActions, [dataPacket.scope]: actions }
+            // console.log(allActions)  
+          }
+          globalActions = allActions["global"]
+          globalActionsKeys = Object.keys(allActions["global"])
+          // console.log(globalActions,globalActionsKeys)
           break;
         case `requestSTT`:
-          sttRecipient = JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"]
-          console.log('requestSTT', sttRecipient)
-
+          sttRecipient = JSON.parse(message.substring(message.indexOf(':') + 1))["id"]
+          // console.log('requestSTT', sttRecipient)
           break;
         case `surrenderSTT`:
-          console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"])
+          // console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["id"])
           sttRecipient = null
           break;
-        case `switchWsChannel`:
-          console.log('switchWsChannel', message.split(":")[1])
-          wsChannel = message.split(":")[1] === 'development' ? 'development' : 'production'
-          break;
         default:
-          console.log(`Unhandled DEV-> ${recievedData}`);
+          console.log(`Unhandled -> ${recievedData}`);
           break;
       }
     });
   });
 }
+
 
 export function StartWebSocketServers(argv) {
-  // if (argv.stt != "OFF")
-
-
   try {
     wss = new WebSocketServer({ port: 1111 });
     SetupWebSocketServer(1111);
-    wssDev = new WebSocketServer({ port: 2222 });
-    SetupWebSocketDevServer(2222);
   } catch (error) {
     console.log(`error caught`, error);
   }
