@@ -63,7 +63,7 @@
         "jenny.sh"
       ],
       "debug": false,
-      "location": "able_store/all/scripts"
+      "location": "able_store/Gen2/all/scripts"
     },
     "william": {
       "paraphrases": [
@@ -74,7 +74,7 @@
         "william.sh"
       ],
       "debug": false,
-      "location": "able_store/all/scripts"
+      "location": "able_store/Gen2/all/scripts"
     },
     "jason": {
       "paraphrases": [
@@ -85,9 +85,9 @@
         "jason.sh"
       ],
       "debug": false,
-      "location": "able_store/all/scripts"
+      "location": "able_store/Gen2/all/scripts"
     },
-    "brightness-maximum": {
+    "increase-brightness": {
       "paraphrases": [
         "brightness maximum",
         "increase brightness"
@@ -97,9 +97,9 @@
         "brightness-maximum.sh"
       ],
       "debug": false,
-      "location": "able_store/all/scripts"
+      "location": "able_store/Gen2/all/scripts"
     },
-    "brightness-minimum": {
+    "lower-brightness": {
       "paraphrases": [
         "brightness minimum",
         "lower brightness"
@@ -109,7 +109,7 @@
         "brightness-minimum.sh"
       ],
       "debug": false,
-      "location": "able_store/all/scripts"
+      "location": "able_store/Gen2/all/scripts"
     },
     "create-a-new-project": {
       "paraphrases": [
@@ -120,7 +120,7 @@
         "new-project.sh"
       ],
       "debug": false,
-      "location": "able_store/all/scripts"
+      "location": "able_store/Gen2/all/scripts"
     },
     "lock-screen": {
       "paraphrases": [

@@ -2,13 +2,13 @@ import { execSync, exec, spawn } from "child_process";
 import { existsSync, unlink, unlinkSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { StartWebSocketServers } from "./socketIO.js";
-import { StartTranscription } from "./transcriptionService.js";
+import { StartWebSocketServer } from "./socketIO.js";
+import { StartTranscription } from "./Gens/Gen2/transcriptionService.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { readJsonSync } from "fs-extra/esm";
 import { cwd } from "process";
-import { WindowManager } from "./helper-scripts/winctrl.js";
+import { WindowManager } from "./Gens/Gen2/helper-scripts/winctrl.js";
 
 const argv = yargs(hideBin(process.argv)).parse();
 // const port = process.env.NODE_ENV == "production" ? 1111 : 2222;
@@ -52,7 +52,7 @@ try {
 function main() {
   WindowManager()
   // start websocet server
-  StartWebSocketServers(argv);
+  StartWebSocketServer(argv);
   // start STT engine with cli args if any
   console.log(!execSync(`nvidia-smi | grep python | awk '{print $5}' | cut -d '.' -f 1`).toString())
   if (!execSync(`nvidia-smi | grep python | awk '{print $5}' | cut -d '.' -f 1`).toString()) {
