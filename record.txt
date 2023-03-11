@@ -10214,3 +10214,13 @@ you Hmm apparently flylly. I can't get onto that stuff.
 Mm.
 Open your source code.
 Google GitHub.com.
+Data.
+William.
+Data.
+I have to get repositories.
+one in project route and one in sub-directory.
+What will happen when I hit grid push?
+git push command
+Mm.
+Google GitLab.
+Mm.
