@@ -1,6 +1,9 @@
 // handle errors if any, apply trouble shoot and then run again
 
+process.on("uncaughtException", (error) => {
+    console.log("Error on Gen 3 \n", error);
 
+});
 
 import { CommandProcessor, CrawlWeb } from "./commandProcessor.js";
 import { cwd } from "process";
@@ -14,8 +17,8 @@ var awareness = {}
 var sttRecipient = null
 
 var nativeActions = ['open-your-source-code']
-var query, raw, action;
-var allActions = {}
+var query, raw, action, focusRequired;
+// var allActions = {}
 
 var interrogativeWords = [
     "what",
@@ -30,11 +33,12 @@ var interrogativeWords = [
     "whose",
 ];
 
-var globalActions, globalActionsKeys, allActions = {}, allActionsKeys = []
+var globalActions, globalActionsKeys, actionsOnActiveWindow = {}, actionsOnActiveWindowKeys = []
 
 const filePaths = {
-    ableStore: join(process.cwd(), 'able_store/Gen2'),
-    activeApp: "./src/Gens/Gen2/helper-scripts/activeApp.sh"
+    ableStore: join(process.cwd(), 'able_store/Gen3'),
+    activeApp: "./src/Gens/Gen3/helper-scripts/activeApp.sh"
+
 }
 // read actions 
 const watchCommandConfig = watch(filePaths.ableStore)
@@ -47,21 +51,16 @@ watchCommandConfig.on('all', (event, path) => {
             readJson(path, (err, file) => {
                 // console.log(file, Object.keys(file))
                 if (err) return
-                // allActions = { ...allActions, {appKey:appObject}        }; // Objects
 
-                var appKey = Object.keys(file)[0]
-                var appObject = file[`${appKey}`]
-                allActions[appKey] = appObject
-                allActionsKeys = allActionsKeys.concat(Object.keys(appObject))
+                globalActions = Object.assign({}, globalActions, file?.global)
+                globalActionsKeys = Object.keys(globalActions); // its an array
 
-                if (path == join(process.cwd(), 'able_store/Gen2/all/global.json')) {
-                    globalActions = file.global; // Objects
-                    globalActionsKeys = Object.keys(globalActions); // its an array
-                    // console.log('added Global Actions')
-                }
+                actionsOnActiveWindow = Object.assign({}, actionsOnActiveWindow, file?.onActiveWindow)
+                actionsOnActiveWindowKeys = Object.keys(actionsOnActiveWindow); // its an array
+
             });
         }
-        // console.log(`added Actions for app, ${Object.keys(allActions)}`)
+        // console.log(`added Actions`, globalActionsKeys, actionsOnActiveWindowKeys)
 
     } catch (error) { }
 })
@@ -75,12 +74,19 @@ export function sentenceProcessor(message, wsMap) {
 
     // if sttRecipient return
     if (sttRecipient) {
-        console.log(chalk.yellowBright(`redirecting \n${message}\n`));
+        console.log(chalk.yellowBright(`redirecting -> ${message}\n`));
 
         wsMap?.get(sttRecipient)?.forEach((client) => {
             // console.log(client)
-            client.send(`sttRedirect,${query}`);
+            const dataPacket = {
+                api: "stt-redirect",
+                payload: {
+                    text: query
+                }
+            }
+            client.send(JSON.stringify(dataPacket));
         })
+
         return
     }
     query = message.split(":")[1].trim().toLowerCase();
@@ -95,6 +101,7 @@ export function sentenceProcessor(message, wsMap) {
     process.stdout.write(chalk.yellow(`(raw) ${raw} `));
 
     action = raw.replaceAll(" ", "-");
+
     var commandObj
 
     // check if its a Question
@@ -104,7 +111,7 @@ export function sentenceProcessor(message, wsMap) {
     ) {
         // if query ends with ? and its a command.
         if (query.endsWith('?') &&
-            (globalActionsKeys.includes(action) || allActionsKeys.includes(action))) {
+            (globalActionsKeys.includes(action) || actionsOnActiveWindowKeys.includes(action))) {
             commandObj = globalActions[action] || allActions[action]
             CommandProcessor(commandObj)
             return
@@ -119,6 +126,7 @@ export function sentenceProcessor(message, wsMap) {
 
     } else {
         // Native, Global, API, CLI
+        process.stdout.write(chalk.green(`(action) ${action} `));
 
         // check if its native action
         if (nativeActions.includes(action)) {
@@ -133,9 +141,10 @@ export function sentenceProcessor(message, wsMap) {
             }
             return
         }
+        // console.log(globalActionsKeys.includes(action))
         // check if its global action
         if (globalActionsKeys.includes(action)) {
-            process.stdout.write(chalk.green(`(Global) ${action} `));
+            process.stdout.write(chalk.green(`(Global)`));
 
 
             //   var allWindow = await wm.getWindows();
@@ -148,30 +157,30 @@ export function sentenceProcessor(message, wsMap) {
             //     .split(",")[1]
             //     .replaceAll('"', "")
             //     .trim();
+
             commandObj = globalActions[action]
-            CommandProcessor(commandObj, activeApp = undefined,
+            CommandProcessor(commandObj, activeApp = commandObj.client, focusRequired = false,
                 wsMap)
 
             return
-        } else {
+        } else if (actionsOnActiveWindow[action]) {
 
-            // var command = raw.replaceAll(" ", "-");
+            commandObj = actionsOnActiveWindow[action]
+
             var activeApp = `${execSync(filePaths.activeApp)}`
                 .split("=")[1]
                 .replace(", ", ".")
                 .replaceAll('"', "")
                 .trim();
 
-            if (!allActions[activeApp]) return
-            if (!allActions[activeApp][action]) return
+            if (commandObj.client !== activeApp) return
 
-            process.stdout.write(chalk.grey(`(App) ${activeApp} (action) ${action}`));
 
-            commandObj = allActions[activeApp][action]
-
+            process.stdout.write(chalk.green(`(onActiveWindow)`));
             console.log(commandObj)
 
-            CommandProcessor(commandObj, activeApp,
+
+            CommandProcessor(commandObj, activeApp, focusRequired = true,
                 wsMap)
 
             // for (const word of raw.split(' ')) {
@@ -222,18 +231,25 @@ export function awarenessProcessor(dataPacket) {
             ...awareness,
             [dataPacket.id]: Object.assign({}, awareness[dataPacket.id], updatedInfo)
         }
-        console.log(awareness[dataPacket.id])
+        // console.log(awareness[dataPacket.id])
 
     }
     if (dataPacket.type == 'actions') {
-        const actions = Object.assign({}, allActions[dataPacket.scope], dataPacket["payload"])
-        // console.log(actions)
-        allActions = { ...allActions, [dataPacket.scope]: actions }
-        // console.log(allActions)  
+        // const actions = 
+        // // console.log(actions)
+        // allActions = { ...allActions, [dataPacket.scope]: actions }
+        console.log(dataPacket.payload)
+
+        if (dataPacket["scope"] === 'global') {
+            globalActions = Object.assign({}, globalActions, dataPacket["payload"])
+            globalActionsKeys = Object.keys(globalActions)
+        }
+        // globalActions = { ...globalActions, globObj }
+        console.log(globalActionsKeys)
+
     }
-    globalActions = allActions["global"]
-    globalActionsKeys = Object.keys(allActions["global"])
-    // console.log(globalActions,globalActionsKeys)
+
+    // globalActions = allActions["global"]
 }
 
 export function RedirectSTT(dataPacket) {

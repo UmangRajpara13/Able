@@ -3,7 +3,7 @@ import { existsSync, unlink, unlinkSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
 import { StartWebSocketServer } from "./socketIO.js";
-import { StartTranscription } from "./Gens/Gen2/transcriptionService.js";
+import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { readJsonSync } from "fs-extra/esm";
@@ -28,7 +28,7 @@ console.log(argv);
 
 // handle errors if any, apply trouble shoot and then run again
 process.on("uncaughtException", (error) => {
-  console.log("uncaught\n", error);
+  // console.log("uncaught\n", error);
   if (error.code == "EADDRINUSE") {
     const kill = spawn(`bash`, ['killPort.sh'], {
       cwd: './src/helper-scripts',
