@@ -235,21 +235,18 @@ export function awarenessProcessor(dataPacket) {
 
     }
     if (dataPacket.type == 'actions') {
-        // const actions = 
-        // // console.log(actions)
-        // allActions = { ...allActions, [dataPacket.scope]: actions }
-        console.log(dataPacket.payload)
 
         if (dataPacket["scope"] === 'global') {
             globalActions = Object.assign({}, globalActions, dataPacket["payload"])
             globalActionsKeys = Object.keys(globalActions)
         }
-        // globalActions = { ...globalActions, globObj }
-        console.log(globalActionsKeys)
-
+        if (dataPacket["scope"] === 'onActiveWindow') {
+            actionsOnActiveWindow = Object.assign({}, actionsOnActiveWindow, dataPacket["payload"])
+            actionsOnActiveWindowKeys = Object.keys(actionsOnActiveWindow)
+        }
+        // console.log(globalActionsKeys)
     }
 
-    // globalActions = allActions["global"]
 }
 
 export function RedirectSTT(dataPacket) {
