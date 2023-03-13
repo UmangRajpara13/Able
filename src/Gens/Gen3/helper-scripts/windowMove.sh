@@ -1,5 +1,7 @@
 #!/bin/bash
 
+WINDOW_ID="$1"
+
 # Get the position of the mouse pointer
 eval $(xdotool getmouselocation --shell)
 
@@ -12,20 +14,20 @@ while read -r MONITOR; do
 #   echo $MONITOR
   if [[ $MONITOR =~ ^(.*)\ connected(\ primary)?\ ([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+) ]]; then
     MONITOR_NAME="${BASH_REMATCH[1]}"
-    MONITOR_WIDTH="${BASH_REMATCH[2]}"
-    MONITOR_HEIGHT="${BASH_REMATCH[3]}" 
-    MONITOR_X="${BASH_REMATCH[4]}"
-    MONITOR_Y="${BASH_REMATCH[5]}"
+    MONITOR_WIDTH="${BASH_REMATCH[3]}"
+    MONITOR_HEIGHT="${BASH_REMATCH[4]}" 
+    MONITOR_X="${BASH_REMATCH[5]}"
+    MONITOR_Y="${BASH_REMATCH[6]}"
 
-    echo "${BASH_REMATCH[@]}"
+    # echo "${BASH_REMATCH[1]},${BASH_REMATCH[2]},${BASH_REMATCH[3]},${BASH_REMATCH[4]}"
 
     # echo $MONITOR_NAME,$MONITOR_WIDTH,$MONITOR_X,$MONITOR_Y,
 
     # Check if the mouse is within the bounds of this monitor
     if (( X >= MONITOR_X && X <= MONITOR_X + MONITOR_WIDTH && Y >= MONITOR_Y && Y <= MONITOR_Y + MONITOR_HEIGHT )); then
       # Move the window to this monitor
-    #   wmctrl -r <window ID> -e 0,$MONITOR_X,$MONITOR_Y,-1,-1
-    #   echo $MONITOR_X,$MONITOR_Y
+      # echo $MONITOR_X,$MONITOR_Y
+      xdotool windowmove $WINDOW_ID $MONITOR_X $MONITOR_Y
 
       # Exit the loop
       break

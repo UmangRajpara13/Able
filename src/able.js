@@ -1,7 +1,6 @@
 import { execSync, exec, spawn } from "child_process";
 import { existsSync, unlink, unlinkSync } from "fs";
-import { homedir } from "os";
-import { join } from "path";
+
 import { StartWebSocketServer } from "./socketIO.js";
 import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
@@ -50,7 +49,7 @@ try {
 }
 
 function main() {
-  WindowManager()
+  // WindowManager()
   // start websocet server
   StartWebSocketServer(argv);
   // start STT engine with cli args if any

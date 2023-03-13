@@ -12,6 +12,7 @@ import { execSync, spawn } from "child_process";
 import { watch } from "chokidar";
 import { readJson } from "fs-extra/esm";
 import { join } from "path";
+import { outputFile } from "fs-extra";
 
 var awareness = {}
 var sttRecipient = null
@@ -32,13 +33,13 @@ var interrogativeWords = [
     "why",
     "whose",
 ];
-
+ 
 var globalActions, globalActionsKeys, actionsOnActiveWindow = {}, actionsOnActiveWindowKeys = []
 
 const filePaths = {
     ableStore: join(process.cwd(), 'able_store/Gen3'),
-    activeApp: "./src/Gens/Gen3/helper-scripts/activeApp.sh"
-
+    activeApp: "./src/Gens/Gen3/helper-scripts/activeApp.sh",
+    awareness: join(process.cwd(), 'memory')
 }
 // read actions 
 const watchCommandConfig = watch(filePaths.ableStore)
@@ -65,12 +66,35 @@ watchCommandConfig.on('all', (event, path) => {
     } catch (error) { }
 })
 
+// read actions 
+const memoryConfig = watch(filePaths.awareness)
 
+memoryConfig.on('all', (event, path) => {
+    console.log(path) 
+    // if (path != 'global/global.json') return
+    try {
+        if (path.endsWith('.json')) {
+            readJson(path, (err, file) => {
+                // console.log(file?.global, Object.keys(file))
+                if (err) return
+
+                globalActions = Object.assign({}, globalActions, file?.global)
+                globalActionsKeys = Object.keys(globalActions); // its an array
+
+                actionsOnActiveWindow = Object.assign({}, actionsOnActiveWindow, file?.onActiveWindow)
+                actionsOnActiveWindowKeys = Object.keys(actionsOnActiveWindow); // its an array
+
+            });
+
+        }
+
+    } catch (error) { }
+})
 
 export function sentenceProcessor(message, wsMap) {
     (raw = "");
 
-    query = message.split(":")[1].trim();
+    query = message.trim();
 
     // if sttRecipient return
     if (sttRecipient) {
@@ -89,8 +113,7 @@ export function sentenceProcessor(message, wsMap) {
 
         return
     }
-    query = message.split(":")[1].trim().toLowerCase();
-
+    query = message.trim().toLowerCase();
 
     raw = query
         .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
@@ -243,6 +266,9 @@ export function awarenessProcessor(dataPacket) {
         if (dataPacket["scope"] === 'onActiveWindow') {
             actionsOnActiveWindow = Object.assign({}, actionsOnActiveWindow, dataPacket["payload"])
             actionsOnActiveWindowKeys = Object.keys(actionsOnActiveWindow)
+        }
+        if (dataPacket["persist"]) {
+            outputFile(`./memory/awareness.json`, JSON.stringify({ [dataPacket["scope"]]: dataPacket["payload"] }))
         }
         // console.log(globalActionsKeys)
     }

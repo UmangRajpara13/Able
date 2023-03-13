@@ -1,7 +1,7 @@
 
 import chalk from "chalk";
 import { appendFile } from "fs";
-import { MessageHandlerGen2 } from "../Gen2/MessageHandlerGen2.js";
+// import { MessageHandlerGen2 } from "../Gen2/MessageHandlerGen2.js";
 import {
     awarenessProcessor, RedirectSTT,
     sentenceProcessor
@@ -11,7 +11,7 @@ import { spawn } from "child_process";
 
 var sttpid
 var dataPacket
-var message, wsMap = new Map()
+// var message, wsMap = new Map()
 
 process.on("uncaughtException", (error) => {
     console.log("Error on Gen 3 \n", error);
@@ -38,37 +38,37 @@ export function MessageHandlerGen3(message, wsMap) {
     message = message
     wsMap = wsMap
 
-    switch (message.split(":")[0]) {
+    switch (Object.keys(message)[0]) {
         case `stt`:
-            console.log(chalk.blue('\n\n[Gen 3]',`${message}\n`));
+            console.log(chalk.blue('\n\n[Gen 3]',`${message["stt"]}\n`));
 
-            appendFile(
+            appendFile( 
                 "record.txt",
-                `${message.split(":")[1].trim()}\n`,
+                `${message["stt"].trim()}\n`,
                 (err) => {
                     if (err) throw err;
                     // console.log('The "data to append" was appended to file!')
                 }
             );
 
-            sentenceProcessor(message, wsMap)
+            sentenceProcessor(message["stt"], wsMap)
             break;
         case `sttpid`:
-            sttpid = message.split(":")[1];
+            sttpid = message["sttpid"];
             console.log(sttpid)
             break;
         case `awareness`:
-            dataPacket = JSON.parse(message.substring(message.indexOf(':') + 1))
-            console.log(dataPacket)
+            dataPacket = message["awareness"]
+            // console.log(dataPacket)
             awarenessProcessor(dataPacket)
             break;
         case `requestSTT`:
-            dataPacket = JSON.parse(message.substring(message.indexOf(':') + 1))["id"]
-            // console.log('requestSTT', sttRecipient)
+            dataPacket = message["requestSTT"]["id"]
+            console.log('requestSTT', dataPacket)
             RedirectSTT(dataPacket)
             break;
         case `surrenderSTT`:
-            // console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["id"])
+            console.log('surrenderSTT', message["surrenderSTT"]["id"])
             RedirectSTT(null)
             break;
         default:

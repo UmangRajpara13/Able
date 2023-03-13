@@ -1,8 +1,16 @@
-import { execSync, spawn } from 'child_process'
+import {exec, execSync, spawn } from 'child_process'
 import { join } from 'path';
 import { homedir } from 'os';
 import chalk from "chalk";
-import { cwd } from 'process';
+
+
+export var scheduledTask = []
+
+const filePaths = {
+    getWindowIDs: "./src/Gens/Gen3/helper-scripts/getWindowIDs.sh",
+    windowMove: "./src/Gens/Gen3/helper-scripts/windowMove.sh"
+}
+
 
 export function CrawlWeb(query) {
     const browse = spawn(`bash`, ["browse.sh", `Search=${query}`], {
@@ -17,7 +25,33 @@ export function CommandProcessor(commandObj, activeApp = undefined, focusRequire
     wsMap = undefined) {
 
 
-    console.log('\nrun', commandObj)
+    console.log('\n\nrun', commandObj)
+
+    if (commandObj?.isScheduledTask) {
+        scheduledTask.pop()
+        // console.log(scheduledTask.length)
+    }
+
+    if (commandObj?.window) {
+        if (commandObj?.window?.title) {
+            const windowIds = `${execSync(`bash ${filePaths.getWindowIDs} "${commandObj?.window?.title}"`)}`
+                .trim().split("\n");
+
+            console.log(`Window IDs:`, windowIds, windowIds.length);
+            if (windowIds.length == 1 && windowIds[0].length == 0) {
+                // launch
+                exec(`${commandObj.window?.executable} &`)
+                scheduledTask.push(commandObj);
+                console.log(scheduledTask)
+                return;
+            } else if (windowIds.length == 1 && windowIds[0].length > 0) {
+                execSync(`wmctrl -a "${commandObj.window.title}"`)
+                const tmp = `${execSync(`bash ${filePaths.windowMove} "${windowIds[0]}"`)}`
+                // console.log(tmp)
+                // do not return here
+            }
+        }
+    }
 
     if (commandObj?.action?.cli) {
         //   if(commandObj)
@@ -61,19 +95,11 @@ export function CommandProcessor(commandObj, activeApp = undefined, focusRequire
             const dataPacket = {
                 api: commandObj.action.api,
                 focusRequired: wsMap.get(activeApp).length > 1 ? true : focusRequired,
-                payload:commandObj.action?.payload
+                payload: commandObj.action?.payload
             }
             client.send(JSON.stringify(dataPacket));
         })
 
         return
-    }
-
-    // TODO: this should automatically users default browser and use that WM_CLASS
-    if (commandObj?.url && commandObj?.api) {
-        wsMap?.get('Navigator.firefox-aurora')?.forEach((client) => {
-            // console.log(client)
-            client.send(`${commandObj.api},${commandObj.url}`);
-        })
     }
 }
