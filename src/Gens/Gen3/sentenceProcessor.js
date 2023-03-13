@@ -126,7 +126,7 @@ export function sentenceProcessor(message, wsMap) {
 
     } else {
         // Native, Global, API, CLI
-        process.stdout.write(chalk.green(`(action) ${action} `));
+        process.stdout.write(chalk.grey(`${action} `));
 
         // check if its native action
         if (nativeActions.includes(action)) {
