@@ -7,7 +7,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { readJsonSync } from "fs-extra/esm";
 import { cwd } from "process";
-import { WindowManager } from "./Gens/Gen2/helper-scripts/winctrl.js";
+import { WindowManager } from "./Gens/Gen3/helper-scripts/windowManager.js";
 
 const argv = yargs(hideBin(process.argv)).parse();
 // const port = process.env.NODE_ENV == "production" ? 1111 : 2222;
@@ -30,7 +30,7 @@ process.on("uncaughtException", (error) => {
   // console.log("uncaught\n", error);
   if (error.code == "EADDRINUSE") {
     const kill = spawn(`bash`, ['killPort.sh'], {
-      cwd: './src/helper-scripts',
+      cwd: './src/Gens/Gen3/helper-scripts',
       detached: true,
       stdio: 'ignore',
     })

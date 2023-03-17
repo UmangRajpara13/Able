@@ -33,7 +33,7 @@ var interrogativeWords = [
     "why",
     "whose",
 ];
- 
+
 var globalActions, globalActionsKeys, actionsOnActiveWindow = {}, actionsOnActiveWindowKeys = []
 
 const filePaths = {
@@ -70,7 +70,7 @@ watchCommandConfig.on('all', (event, path) => {
 const memoryConfig = watch(filePaths.awareness)
 
 memoryConfig.on('all', (event, path) => {
-    console.log(path) 
+    console.log(path)
     // if (path != 'global/global.json') return
     try {
         if (path.endsWith('.json')) {
@@ -121,7 +121,7 @@ export function sentenceProcessor(message, wsMap) {
 
     if (raw.length == 0) return;
 
-    process.stdout.write(chalk.yellow(`(raw) ${raw} `));
+    process.stdout.write(chalk.yellow(`( raw ) ${raw} `));
 
     action = raw.replaceAll(" ", "-");
 
@@ -149,11 +149,23 @@ export function sentenceProcessor(message, wsMap) {
 
     } else {
         // Native, Global, API, CLI
+        try {
+            var activeApp = `${execSync(filePaths.activeApp)}`
+                .split("=")[1]
+                .replace(", ", ".")
+                .replaceAll('"', "")
+                .trim();
+
+            console.log(activeApp)
+        } catch (error) {
+            console.error(error)
+        }
+
         process.stdout.write(chalk.grey(`${action} `));
 
         // check if its native action
         if (nativeActions.includes(action)) {
-            process.stdout.write(chalk.green(`(Native) ${action} `));
+            process.stdout.write(chalk.green(`( Native ) ${action} `));
 
             switch (action) {
                 case "open-your-source-code":
@@ -167,7 +179,7 @@ export function sentenceProcessor(message, wsMap) {
         // console.log(globalActionsKeys.includes(action))
         // check if its global action
         if (globalActionsKeys.includes(action)) {
-            process.stdout.write(chalk.green(`(Global)`));
+            process.stdout.write(chalk.green(`( Global )`));
 
 
             //   var allWindow = await wm.getWindows();
@@ -199,7 +211,7 @@ export function sentenceProcessor(message, wsMap) {
             if (commandObj.client !== activeApp) return
 
 
-            process.stdout.write(chalk.green(`(onActiveWindow)`));
+            process.stdout.write(chalk.green(`( onActiveWindow )`));
             console.log(commandObj)
 
 

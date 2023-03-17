@@ -20,18 +20,18 @@ process.on("uncaughtException", (error) => {
 process.on("SIGINT", () => {
 
     const killPort = spawn(`bash`, ['killPort.sh'], {
-      cwd: './helper-scripts',
-      detached: true,
-      stdio: 'ignore',
+        cwd: './src/Gens/Gen3/helper-scripts',
+        detached: true,
+        stdio: 'ignore',
     })
     killPort.unref();
-  
+
     const restart = spawn(`schnell`, ['/home/user/Desktop/My Projects/able_dev/engine.sh'], {
-      detached: true,
-      stdio: 'ignore',
+        detached: true,
+        stdio: 'ignore',
     })
     restart.unref();
-  });
+});
 
 export function MessageHandlerGen3(message, wsMap) {
 
@@ -40,9 +40,9 @@ export function MessageHandlerGen3(message, wsMap) {
 
     switch (Object.keys(message)[0]) {
         case `stt`:
-            console.log(chalk.blue('\n\n[Gen 3]',`${message["stt"]}\n`));
+            console.log(chalk.blue('\n\n( Gen 3 )', `${message["stt"]}\n`));
 
-            appendFile( 
+            appendFile(
                 "record.txt",
                 `${message["stt"].trim()}\n`,
                 (err) => {

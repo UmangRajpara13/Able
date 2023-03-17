@@ -119,7 +119,7 @@ export function sentenceProcessor(message, wsMap) {
 
     } else {
         // Native, Global, API, CLI
-
+ 
         // check if its native action
         if (nativeActions.includes(action)) {
             process.stdout.write(chalk.green(`(Native) ${action} `));
@@ -141,13 +141,7 @@ export function sentenceProcessor(message, wsMap) {
             //   var allWindow = await wm.getWindows();
             //   allWindow = allWindow.map((winObj) => winObj.className);
             //   var allWindowIDs = allWindow.map((winObj) => winObj.id);
-            //   var activeApp = `${execSync("./activeApp.sh")}`;
 
-            //   activeApp = activeApp
-            //     .split("=")[1]
-            //     .split(",")[1]
-            //     .replaceAll('"', "")
-            //     .trim();
             commandObj = globalActions[action]
             CommandProcessor(commandObj, activeApp = undefined,
                 wsMap)
@@ -161,6 +155,8 @@ export function sentenceProcessor(message, wsMap) {
                 .replace(", ", ".")
                 .replaceAll('"', "")
                 .trim();
+
+            console.log(activeApp)
 
             if (!allActions[activeApp]) return
             if (!allActions[activeApp][action]) return

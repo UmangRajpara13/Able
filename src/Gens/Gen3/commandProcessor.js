@@ -1,8 +1,11 @@
-import {exec, execSync, spawn } from 'child_process'
+import { exec, execSync, spawn } from 'child_process'
 import { join } from 'path';
 import { homedir } from 'os';
 import chalk from "chalk";
+import { WMCtrl } from "./WmCtrl/WmCtrl.js";
+import { spawnProcess } from './manifestProcess.js'
 
+const wm = new WMCtrl()
 
 export var scheduledTask = []
 
@@ -10,7 +13,6 @@ const filePaths = {
     getWindowIDs: "./src/Gens/Gen3/helper-scripts/getWindowIDs.sh",
     windowMove: "./src/Gens/Gen3/helper-scripts/windowMove.sh"
 }
-
 
 export function CrawlWeb(query) {
     const browse = spawn(`bash`, ["browse.sh", `Search=${query}`], {
@@ -21,69 +23,69 @@ export function CrawlWeb(query) {
     browse.unref();
 }
 
-export function CommandProcessor(commandObj, activeApp = undefined, focusRequired,
+export async function CommandProcessor(commandObj, activeApp = undefined, focusRequired,
     wsMap = undefined) {
 
 
     console.log('\n\nrun', commandObj)
+    // var allWindows = await wm.getWindows()
+    // var allWindowClassName = allWindows.map(winObj => winObj.className)
+    // var allWindowIDs = allWindows.map(winObj => winObj.id)
 
+    // console.log(allWindows)
     if (commandObj?.isScheduledTask) {
-        scheduledTask.pop()
+        scheduledTask.pop() 
         // console.log(scheduledTask.length)
     }
 
     if (commandObj?.window) {
-        if (commandObj?.window?.title) {
-            const windowIds = `${execSync(`bash ${filePaths.getWindowIDs} "${commandObj?.window?.title}"`)}`
+        if (commandObj?.client) {
+            const windowIds = `${execSync(`bash ${filePaths.getWindowIDs} "${commandObj?.client}"`)}`
                 .trim().split("\n");
 
             console.log(`Window IDs:`, windowIds, windowIds.length);
             if (windowIds.length == 1 && windowIds[0].length == 0) {
-                // launch
-                exec(`${commandObj.window?.executable} &`)
-                scheduledTask.push(commandObj);
-                console.log(scheduledTask)
-                return;
+                console.log('// launch required')
+
+                spawnProcess(commandObj?.window?.launch)
+
+                // if API, then add to scheduled Task!
+                if (commandObj?.action?.api) {
+                    // exec(`${commandObj.window?.executable} &`)
+
+                    scheduledTask.push(commandObj); return;
+                } 
+                else {
+                    // Temporary Workaround by using timer
+                    setTimeout(async () => {
+                        const windowIds = `${execSync(`bash ${filePaths.getWindowIDs} "${commandObj?.client}"`)}`
+                            .trim().split("\n");
+                        if (windowIds.length == 1 && windowIds[0].length == 0) {
+                            exec(`xdotool windowactivate "${windowIds[0]}"`)
+
+                            // if (commandObj?.window?.launch?.focus) await wm.activate(windowIds[0])
+                            // if (commandObj?.window?.launch?.move)
+                            exec(`bash ${filePaths.windowMove} "${windowIds[0]}"`)
+                        }
+                    }, 500)  
+
+                }
             } else if (windowIds.length == 1 && windowIds[0].length > 0) {
-                execSync(`wmctrl -a "${commandObj.window.title}"`)
-                const tmp = `${execSync(`bash ${filePaths.windowMove} "${windowIds[0]}"`)}`
-                // console.log(tmp)
+                // already launched
+                exec(`xdotool windowactivate "${windowIds[0]}"`)
+                // if (commandObj?.window?.launch?.focus) await wm.activate(windowIds[0])
+                // if (commandObj?.window?.launch?.move) 
+                exec(`bash ${filePaths.windowMove} "${windowIds[0]}"`)
                 // do not return here
+            } else if (windowIds.length > 1) {
+                console.log('TODO : multipe windows detected! ')
             }
         }
     }
 
     if (commandObj?.action?.cli) {
-        //   if(commandObj)
-        const execute = spawn(
-            commandObj.action.cli,
-            // [`${raw}.sh`, `ActiveApp=${activeApp}`],
-            commandObj.action?.args,
-            {
-                ...(!commandObj.action?.debug && {
-                    detached: true,
-                    stdio: "ignore"
-                }),
-                ...(commandObj.action?.location && {
-                    cwd: commandObj.action?.location
-                })
-            }
-        );
-        if (commandObj.action?.debug) {
-            execute.stdout.on("data", (data) => {
-                process.stdout.write(`<< ${data} `.replace("\n", ""));
-            });
 
-            execute.stderr.on("data", (data) => {
-                console.error(`stderr: ${data}`);
-            });
-
-            execute.on("close", (code) => {
-                code == 0
-                    ? process.stdout.write(chalk.green(`Exit Code ${code}`))
-                    : process.stdout.write(chalk.bgRed(`Exit Code ${code}`));
-            });
-        } else execute.unref();
+        spawnProcess(commandObj.action)
 
         return
     }

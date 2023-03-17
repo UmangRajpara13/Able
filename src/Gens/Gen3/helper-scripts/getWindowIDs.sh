@@ -1,8 +1,6 @@
 #!/bin/bash
 
-WINDOW_TITLE="$1"
+WINDOW_CLASS="$1"
 
-# Search for windows by title and output their IDs
-xdotool search --name "$WINDOW_TITLE" | while read -r window_id; do
-  echo "$window_id"
-done
+window_id=$(wmctrl -l -x | awk '{print $1,$3}' | grep "$WINDOW_CLASS" | awk "{print \$1}")
+echo "$window_id"
