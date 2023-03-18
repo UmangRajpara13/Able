@@ -11,15 +11,17 @@ import chalk from "chalk";
 import { execSync, spawn } from "child_process";
 import { watch } from "chokidar";
 import { readJson } from "fs-extra/esm";
-import { join } from "path";
+import { extname, join, sep } from "path";
 import { outputFile } from "fs-extra";
+import { homedir } from "os";
+import { readdir, readdirSync } from "fs";
 
 var awareness = {}
 var sttRecipient = null
 
 var nativeActions = ['open-your-source-code']
 var query, raw, action, focusRequired;
-// var allActions = {}
+var myProjects = {}
 
 var interrogativeWords = [
     "what",
@@ -39,7 +41,8 @@ var globalActions, globalActionsKeys, actionsOnActiveWindow = {}, actionsOnActiv
 const filePaths = {
     ableStore: join(process.cwd(), 'able_store/Gen3'),
     activeApp: "./src/Gens/Gen3/helper-scripts/activeApp.sh",
-    awareness: join(process.cwd(), 'memory')
+    awareness: join(process.cwd(), 'memory'),
+    myProjects: join(homedir(), "Desktop/My Projects/")
 }
 // read actions 
 const watchCommandConfig = watch(filePaths.ableStore)
@@ -67,10 +70,10 @@ watchCommandConfig.on('all', (event, path) => {
 })
 
 // read actions 
-const memoryConfig = watch(filePaths.awareness)
+const watchMemoryConfig = watch(filePaths.awareness)
 
-memoryConfig.on('all', (event, path) => {
-    console.log(path)
+watchMemoryConfig.on('all', (event, path) => {
+    // console.log(path)
     // if (path != 'global/global.json') return
     try {
         if (path.endsWith('.json')) {
@@ -91,6 +94,66 @@ memoryConfig.on('all', (event, path) => {
     } catch (error) { }
 })
 
+const watchMyProjects = watch(filePaths.myProjects, { depth: 0 })
+
+watchMyProjects.on('all', (event, directoryPath) => {
+    // console.log(directoryPath)
+    myProjects["global"] = {}
+    try {
+        readdir(directoryPath, (err, files) => {
+            if (err) {
+                console.log('Error reading directory:', err);
+                return;
+            }
+            // check if there are any programming files available
+            const programmingFiles = files.filter((file) =>
+                ['.js', '.ts', '.py', '.java', '.json', '.ipynb', '.c', '.cpp', '.git'].includes(extname(file))
+            );
+
+            // open the directory in the appropriate application
+            if (programmingFiles.length > 0) {
+                // console.log(directoryPath, '-----vscode',)
+                const tmpObj = {
+                    [`open-${directoryPath.substring(directoryPath.lastIndexOf(sep)+1).replaceAll(' ','-')}`]: {
+                        client: "code.Code",
+                        action: {
+                            cli: "code",
+                            args: [
+                                "--new-window",
+                                "." 
+                            ],
+                            location: directoryPath,
+                            debug: false
+                        }
+                    }
+                }
+                globalActions = Object.assign({}, globalActions, tmpObj)
+                globalActionsKeys = Object.keys(globalActions)
+                console.log(globalActionsKeys)
+                //   // open directory in VS Code
+                //   exec(`code "${directoryPath}"`);
+            } else {
+                console.log(directoryPath, '-----FM',)
+
+                //   // open directory in file manager
+                //   switch (process.platform) {
+                //     case 'darwin':
+                //       exec(`open "${directoryPath}"`);
+                //       break;
+                //     case 'win32':
+                //       exec(`explorer "${directoryPath}"`);
+                //       break;
+                //     case 'linux':
+                //       exec(`xdg-open "${directoryPath}"`);
+                //       break;
+                //     default:
+                //       console.log(`Unsupported platform: ${process.platform}`);
+                //   }
+            }
+        });
+
+    } catch (error) { }
+})
 export function sentenceProcessor(message, wsMap) {
     (raw = "");
 
