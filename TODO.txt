@@ -12,3 +12,6 @@ in a given moment.
 
 #commands
 push to remote
+open file explerer on project launch in vscdeo
+open file manager of projectroot
+convert notebook  to py file
