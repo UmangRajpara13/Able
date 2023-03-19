@@ -114,13 +114,13 @@ watchMyProjects.on('all', (event, directoryPath) => {
             if (programmingFiles.length > 0) {
                 // console.log(directoryPath, '-----vscode',)
                 const tmpObj = {
-                    [`open-${directoryPath.substring(directoryPath.lastIndexOf(sep)+1).replaceAll(' ','-')}`]: {
+                    [`open-${directoryPath.substring(directoryPath.lastIndexOf(sep) + 1).replaceAll(' ', '-')}`]: {
                         client: "code.Code",
                         action: {
                             cli: "code",
                             args: [
                                 "--new-window",
-                                "." 
+                                "."
                             ],
                             location: directoryPath,
                             debug: false
@@ -129,11 +129,11 @@ watchMyProjects.on('all', (event, directoryPath) => {
                 }
                 globalActions = Object.assign({}, globalActions, tmpObj)
                 globalActionsKeys = Object.keys(globalActions)
-                console.log(globalActionsKeys)
+                // console.log(globalActionsKeys)
                 //   // open directory in VS Code
                 //   exec(`code "${directoryPath}"`);
             } else {
-                console.log(directoryPath, '-----FM',)
+                // console.log(directoryPath, '-----FM',)
 
                 //   // open directory in file manager
                 //   switch (process.platform) {
@@ -203,11 +203,12 @@ export function sentenceProcessor(message, wsMap) {
             return
         }
 
-        if (query.startsWith("google"))
+        if (query.startsWith("google")) {
             query = query.replace("google", "").trim();
-
+            CrawlWeb(query)
+        }
         // open(`https://www.google.com/search?q=${query}`)
-        CrawlWeb(query)
+
 
 
     } else {
