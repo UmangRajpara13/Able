@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "dev": "bash engine.sh",
-    "start": "sh start_prod.sh",
     "engine_only": "npx nodemon --watch src src/able.js --stt=OFF",
     "stt_only": "whisper-mint/whisper/bin/python3 ./whisper-mint/main.py 1111",
     "concurrently": "concurrently --kill-others \"npm run start_engine\" \"npm run start_stt\""
@@ -14,11 +13,15 @@
   "author": "umang",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow/tfjs": "^4.3.0",
+    "@tensorflow/tfjs-core": "^4.3.0",
+    "@tensorflow/tfjs-node": "^4.3.0",
     "chalk": "^5.2.0",
     "chokidar": "^3.5.3",
     "fs-extra": "^11.1.0",
     "open": "^8.4.0",
     "pouchdb": "^8.0.0",
+    "seedrandom": "^3.0.5",
     "ws": "^8.11.0",
     "yargs": "^17.6.2"
   },
