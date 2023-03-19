@@ -14833,3 +14833,57 @@ From it, change the center push.
 in fo
 Better me now.
 stage all changes
+terminal.
+Hey.
+__
+Jason.
+Listen.
+Jason.
+Push to remote.
+Thank you, son.
+Jason.
+Jason?
+Jason.
+Data.
+Go tonight.
+Jason.
+Say hello.
+Say hello.
+Say hello.
+Yes, sir.
+Jason.
+Jason.
+Jason.
+Open VS Code.
+Open VS Code.
+settings.
+settings.
+settings.
+settings.
+data.
+data.
+data.
+I want to add a value to a key in JavaScript.
+object.
+This assignment actually takes the object itself.
+and checks if the key exists or not. If it does it.
+adds the value to that key.
+otherwise it.
+adds undefined.
+How do I do this?
+I want to use.
+JavaScript way of triple dots.
+and an OR operator.
+settings.
+settings.
+terminal.
+terminal.
+Google Hi.
+data.
+data.
+Open System Configuration.
+Open configuration.
+Say hello
+Initiate staging process.
+Okay.
+Okay.

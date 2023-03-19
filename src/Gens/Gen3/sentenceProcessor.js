@@ -56,15 +56,41 @@ watchCommandConfig.on('all', (event, path) => {
                 // console.log(file, Object.keys(file))
                 if (err) return
 
-                globalActions = Object.assign({}, globalActions, file?.global)
-                globalActionsKeys = Object.keys(globalActions); // its an array
 
-                actionsOnActiveWindow = Object.assign({}, actionsOnActiveWindow, file?.onActiveWindow)
-                actionsOnActiveWindowKeys = Object.keys(actionsOnActiveWindow); // its an array
 
+                Object.keys(file?.global).forEach(key => {
+                    // console.log(file?.global[key], file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"])
+
+                    globalActions = {
+                        ...globalActions, [key]: {
+                            ...file?.global[key],
+                            client: file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"],
+                            window: file?.global[key]["window"] ? file?.global[key]["window"] : file["window"]
+                        }
+                    }
+                })
+
+                globalActionsKeys = globalActionsKeys.concat(Object.keys(file?.global))
+
+                if (file?.onActiveWindow) {
+                    Object.keys(file?.onActiveWindow).forEach(key => {
+                        // console.log(key)
+                        actionsOnActiveWindow = {
+                            ...actionsOnActiveWindow, [key]: {
+                                ...file?.onActiveWindow[key],
+                                client: file?.onActiveWindow[key]["client"] ? file?.onActiveWindow[key]["client"] : file["WM_CLASS"],
+                                window: file?.onActiveWindow[key]["window"] ? file?.onActiveWindow[key]["window"] : file["window"]
+                            }
+                        }
+                    })
+                    actionsOnActiveWindowKeys = actionsOnActiveWindowKeys.concat(Object.keys(file?.onActiveWindow))
+                }
             });
         }
         // console.log(`added Actions`, globalActionsKeys, actionsOnActiveWindowKeys)
+        // console.log(`added Actions`, Object.keys(globalActions))
+        // console.log(`added Actions`, globalActions)
+        // console.log(`added Actions`, Object.keys(actionsOnActiveWindowKeys))
 
     } catch (error) { }
 })

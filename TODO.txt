@@ -10,5 +10,5 @@ in a given moment.
 
 
 
-start at login
-start on boot
+#commands
+push to remote
