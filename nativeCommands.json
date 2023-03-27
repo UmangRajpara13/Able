@@ -1,0 +1,26 @@
+{
+    "global": {
+        "open-downloads": {
+            "paraphrases": [
+                "open downloads"
+            ],
+            "action": {
+                "cli": "nautilus",
+                "args": [
+                    "/home/user/Downloads"
+                ],
+                "debug": false
+            }
+        },
+        "show-my-projects": {
+            "paraphrases": [],
+            "action": {
+                "cli": "nautilus",
+                "args": [
+                    "/home/user/Desktop/My Projects"
+                ],
+                "debug": false
+            }
+        }
+    }
+}

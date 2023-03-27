@@ -14,12 +14,11 @@ import { readJson } from "fs-extra/esm";
 import { extname, join, sep } from "path";
 import { outputFile } from "fs-extra";
 import { homedir } from "os";
-import { readdir, readdirSync } from "fs";
+import { readdir, readdirSync, statSync } from "fs";
 
 var awareness = {}
 var sttRecipient = null
 
-var nativeActions = ['open-your-source-code']
 var query, raw, action, focusRequired;
 var myProjects = {}
 
@@ -42,7 +41,8 @@ const filePaths = {
     ableStore: join(process.cwd(), 'able_store/Gen3'),
     activeApp: "./src/Gens/Gen3/helper-scripts/activeApp.sh",
     awareness: join(process.cwd(), 'memory'),
-    myProjects: join(homedir(), "Desktop/My Projects/")
+    myProjects: join(homedir(), "Desktop/My Projects/"),
+    nativeCommands: join(process.cwd(), 'nativeCommands.json')
 }
 // read actions 
 const watchCommandConfig = watch(filePaths.ableStore)
@@ -58,19 +58,21 @@ watchCommandConfig.on('all', (event, path) => {
 
 
 
-                Object.keys(file?.global).forEach(key => {
-                    // console.log(file?.global[key], file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"])
+                if (file?.global) {
+                    Object.keys(file?.global).forEach(key => {
+                        // console.log(file?.global[key], file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"])
 
-                    globalActions = {
-                        ...globalActions, [key]: {
-                            ...file?.global[key],
-                            client: file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"],
-                            window: file?.global[key]["window"] ? file?.global[key]["window"] : file["window"]
+                        globalActions = {
+                            ...globalActions, [key]: {
+                                ...file?.global[key],
+                                client: file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"],
+                                window: file?.global[key]["window"] ? file?.global[key]["window"] : file["window"]
+                            }
                         }
-                    }
-                })
+                    });
 
-                globalActionsKeys = globalActionsKeys.concat(Object.keys(file?.global))
+                    globalActionsKeys = globalActionsKeys.concat(Object.keys(file?.global))
+                }
 
                 if (file?.onActiveWindow) {
                     Object.keys(file?.onActiveWindow).forEach(key => {
@@ -126,7 +128,8 @@ watchMyProjects.on('all', (event, directoryPath) => {
     // console.log(directoryPath)
     myProjects["global"] = {}
     try {
-        readdir(directoryPath, (err, files) => {
+        const stats = statSync(directoryPath);
+        if (stats.isDirectory()) readdir(directoryPath, (err, files) => {
             if (err) {
                 console.log('Error reading directory:', err);
                 return;
@@ -160,7 +163,19 @@ watchMyProjects.on('all', (event, directoryPath) => {
                 //   exec(`code "${directoryPath}"`);
             } else {
                 // console.log(directoryPath, '-----FM',)
-
+                const tmpObj = {
+                    [`open-${directoryPath.substring(directoryPath.lastIndexOf(sep) + 1).replaceAll(' ', '-')}`]: {
+                        client: "org.gnome.Nautilus.Org.gnome.Nautilus",
+                        action: {
+                            cli: "nautilus",
+                            args: [directoryPath],
+                            location: directoryPath,
+                            debug: false
+                        }
+                    }
+                }
+                globalActions = Object.assign({}, globalActions, tmpObj)
+                globalActionsKeys = Object.keys(globalActions)
                 //   // open directory in file manager
                 //   switch (process.platform) {
                 //     case 'darwin':
@@ -180,6 +195,29 @@ watchMyProjects.on('all', (event, directoryPath) => {
 
     } catch (error) { }
 })
+
+var nativeActions, nativeActionsKeys = ['open-your-source-code']
+
+const watchNativeCommands = watch(filePaths.nativeCommands, { depth: 0 })
+
+watchNativeCommands.on('all', (event, nativeCommandsPath) => {
+    console.log(nativeCommandsPath)
+    try {
+        if (nativeCommandsPath.endsWith('.json')) {
+            readJson(nativeCommandsPath, (error, file) => {
+                // console.log(file?.global, Object.keys(file))
+                if (error) { console.log(`${error}`); return }
+
+                nativeActions = file?.global
+                nativeActionsKeys = nativeActionsKeys.concat(Object.keys(nativeActions)); // its an array
+                // console.log(nativeActions,nativeActionsKeys)
+
+            });
+        }
+
+    } catch (error) { }
+})
+
 export function sentenceProcessor(message, wsMap) {
     (raw = "");
 
@@ -254,14 +292,15 @@ export function sentenceProcessor(message, wsMap) {
         process.stdout.write(chalk.grey(`${action} `));
 
         // check if its native action
-        if (nativeActions.includes(action)) {
+        if (nativeActionsKeys.includes(action)) {
             process.stdout.write(chalk.green(`( Native ) ${action} `));
 
             switch (action) {
                 case "open-your-source-code":
-                    spawn('code', ['-r', '.'], { cwd: cwd(), detached: true, stdio: 'ignore' })
+                    spawn('code', ['--new-window', '.'], { cwd: cwd(), detached: true, stdio: 'ignore' })
                     break;
                 default:
+                    CommandProcessor(nativeActions[action])
                     break;
             }
             return

@@ -27,7 +27,7 @@ export async function CommandProcessor(commandObj, activeApp = undefined, focusR
     wsMap = undefined) {
 
 
-    console.log('\n\nrun', commandObj)
+    // console.log('\n\nrun', commandObj)
     // var allWindows = await wm.getWindows()
     // var allWindowClassName = allWindows.map(winObj => winObj.className)
     // var allWindowIDs = allWindows.map(winObj => winObj.id)

@@ -6,10 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "bash engine.sh",
-    "start": "sh start_prod.sh",
     "engine_only": "npx nodemon --watch src src/able.js --stt=OFF",
-    "stt_only": "whisper-mint/whisper/bin/python3 ./whisper-mint/main.py 1111",
-    "concurrently": "concurrently --kill-others \"npm run start_engine\" \"npm run start_stt\""
+    "stt_only": "bash stt_only.sh"
   },
   "author": "umang",
   "license": "ISC",
