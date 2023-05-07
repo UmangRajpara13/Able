@@ -1,7 +1,7 @@
 import { execSync, exec, spawn } from "child_process";
 import { existsSync, unlink, unlinkSync } from "fs";
 
-import { StartWebSocketServer } from "./socketIO.js";
+import { StartWebSocketServer } from "./webSocketIO.js";
 import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
