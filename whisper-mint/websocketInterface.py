@@ -6,9 +6,11 @@ import sounddevice as sd
 from timer import Timer
 import soundfile as sf
 from transcribe import model
-
+import json
 import ffmpeg
 import numpy as np
+from termcolor import colored
+import ssl
 
 ws=None
 
@@ -28,13 +30,15 @@ def transcription():
         )
     except ffmpeg.Error as e:
         raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
-
+ 
     arr = np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
     os.remove("action.wav")
-
+ 
     result = model.transcribe(arr)
-    print(result["text"])
-    if(len(result["text"])): asyncio.run(send_message('stt:' + result["text"]))
+    transcript = result["text"]
+    print(f"\n{colored(transcript,'blue')}\n")
+    stt = {"stt": result["text"]}
+    if(len(result["text"])): asyncio.run(send_message(json.dumps(stt)))
     # asyncio.create_task(Transcribe(arr))
 
 
@@ -46,16 +50,17 @@ async def record_buffer(**kwargs):
     event = asyncio.Event()
     idx = 0
     idy = 0
-    threshold = 3 #init volume
+    threshold = 6 #init volume
     listening_initialized = False
     timer = Timer()
     prefix_indata = np.empty((100_000_000, 1), dtype='float32')
     buffer = np.empty((100_000_000, 1), dtype='float32')
+    highVolIndex = 0
     # q = queue.Queue()
 
     def callback(indata, frame_count, time_info, status):
         # print(np.concatenate(indata, axis=0))
-        nonlocal idx, idy, listening_initialized
+        nonlocal idx, idy, listening_initialized,highVolIndex
         nonlocal buffer, prefix_indata, threshold
 
         # print(prefix_indata.size , prefix_indata.size - idy ,indata.sie)
@@ -74,7 +79,7 @@ async def record_buffer(**kwargs):
 
         # calc volume -> y
         y = np.sum(x)
-        # print(y)
+        print(y)
         # volume control y > threshold
         if y > threshold:
             # print(y)
@@ -83,35 +88,52 @@ async def record_buffer(**kwargs):
                 # print('add highs to listening')
                 buffer[idx:idx + len(indata)] = indata
                 idx += len(indata)
+
+                highVolIndex += len(indata)
+
                 timer.stop()
             else:
                 # print('Start Listening')
 
                 listening_initialized = True
-                threshold = 1 # lower vol after speaker started speaking
+                threshold = 4 # lower vol threshold after speaker started speaking
 
-                # here idx is 0
+                # here idx is 0, add left hand buffer before threshold
                 buffer[idx:100] = prefix_indata[-101:-1]
-
+                # regularly appending buffer
                 buffer[101:101 + len(indata)] = indata
                 idx += len(indata)
+
+                highVolIndex += len(indata)
+
         else:
             if listening_initialized:
                 if timer.is_running():
                     if timer.is_timeout():
-                        threshold = 3 # restore init volume
+                        threshold = 6 # restore init volume
 
                         buffer = buffer[0:idx]
-                        if(len(buffer) < 10000): 
-                            print('noise',len(buffer))
+
+                        print('buffer',len(buffer))
+
+                        print('high vol buffer Index',highVolIndex)
+                        
+
+                        if(highVolIndex < 4000): 
+
+                            print(colored(f"\n[{highVolIndex}] Deflecting Ripple noise!\n",'green'))
                             listening_initialized = False
                             timer.stop()
-                            idx = 0
+                            
                             buffer = np.empty((100_000_000, 1), dtype='float32')
+                            idx = 0
                             prefix_indata = np.empty(
                             (100_000_000, 1), dtype='float32')
+
+                            highVolIndex = 0
+
                         else:
-                            print('buff',len(buffer))
+                            # print('buff',len(buffer))
 
                             try:
                                 os.remove('./action.wav')
@@ -133,6 +155,8 @@ async def record_buffer(**kwargs):
                             buffer = np.empty((100_000_000, 1), dtype='float32')
                             prefix_indata = np.empty(
                                 (100_000_000, 1), dtype='float32')
+
+                            highVolIndex = 0
 
                         # loop.call_soon_threadsafe(event.set)
                         # stream.abort()
@@ -162,12 +186,16 @@ async def record_buffer(**kwargs):
 async def connectWebSocket(uri):
     global ws
     another_task = None
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
     while True:
         try:
-            async with websockets.connect(uri) as websocket:
+            async with websockets.connect(uri, ssl=ssl_context) as websocket:
                 # Send and receive messages using the WebSocket connection
                 ws=websocket
-                await send_message("sttpid:"+str(os.getpid()))
+                sttpid = {"sttpid": str(os.getpid())}
+                await send_message(json.dumps(sttpid))
 
                 if not another_task:
                     another_task = asyncio.create_task(record_buffer())

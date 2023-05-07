@@ -3,63 +3,59 @@ import sys
 from websocketInterface import connectWebSocket
 import os, signal
 import json
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import importlib
 
+MODULE_NAME = "main"
 
-def handler(signum, frame):
-    signame = signal.Signals(signum).name
-    print(f'Signal handler called with signal {signame} ({signum})')
-    deregisterTranscriptionPid()
-    # raise OSError("Couldn't open device!")
-
-
-def deregisterTranscriptionPid(signum, frame):
-    signame = signal.Signals(signum).name
-
-    print(f'Signal handler called with signal {signame} ({signum})')
-    sys.exit('\nInterrupted by user')
-
-    # os.remove("action.wav")
-
-    # # Load JSON file
-    # with open('pid.json', 'r') as f:
-    #     data = json.load(f)
-
-    # # Delete key from dictionary
-    # if 'sttPid' in data:
-    #     del data['sttPid']
-
-    # # Write updated data to JSON file
-    # with open('pid.json', 'w') as f:
-    #     json.dump(data, f)
+class MyHandler(FileSystemEventHandler):
+    print("MyHandler")
         
-    # sys.exit('\nInterrupted by user')
+    def on_any_event(self, event):
+        # print("on_any_event..",event.src_path)  
 
-signal.signal(signal.SIGHUP,deregisterTranscriptionPid)
+        if event.is_directory:
+            return None
 
-async def registerTranscriptionPid():
-    # Load JSON file 
-    with open('pid.json', 'r') as f:
-        data = json.load(f)
+        # Check if the event is for a Python file
+        if event.event_type == 'modified' and event.src_path.endswith(".py"):
+            print("\n Reloading modules...\n")
+            # Reload the main module  
+            if MODULE_NAME in sys.modules: 
+                importlib.reload(sys.modules[MODULE_NAME])
 
-    # Add new key-value pair
-    data['sttPid'] = os.getpid()
-
-    # Write updated data to JSON file
-    with open('pid.json', 'w') as f:
-        json.dump(data, f)
-
+            # Cancel and recreate the async task to start it again with the new code
+            # cancel_async_task()
+            # start_async_task()   
 
 async def main(frames=100_000_000, channels=1, dtype='float32', **kwargs):
-    print(sys.argv[1:],os.getpid())
-    await registerTranscriptionPid()
-    # await connectWebSocket("ws://localhost:"+str(sys.argv[1]))
-    await asyncio.create_task(connectWebSocket("ws://localhost:"+str(sys.argv[1])))
+    
+    print(sys.argv[1:],os.getppid(),os.getpid())
+    # Start the watchdog observer
+    observer = Observer()
+    observer.schedule(MyHandler(), path='.', recursive=True)
+    observer.start()
 
-    # await record_buffer(**kwargs)
+    await asyncio.create_task(connectWebSocket("wss://localhost:"+str(sys.argv[1])))
+       
+    
+ 
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join() 
+
 
 if __name__ == "__main__":
     try:
-        print(sys.argv[1:],os.getppid(),os.getpid())
+        # print(sys.modules)
         asyncio.run(main())
+        # main()
+
     except KeyboardInterrupt:
-        deregisterTranscriptionPid()
+        sys.exit('Interrupted by user!\n')
