@@ -295,7 +295,7 @@ export function sentenceProcessor(message, wsMap) {
             process.stdout.write(chalk.green(`( Global )`));
 
             commandObj = globalActions[action]
-            CommandProcessor(commandObj, activeApp = commandObj.client, focusRequired = false,
+            CommandProcessor(commandObj,  commandObj.client, focusRequired = false,
                 wsMap)
 
             return
@@ -306,7 +306,7 @@ export function sentenceProcessor(message, wsMap) {
             process.stdout.write(chalk.green(`( onActiveWindow )`));
             console.log(commandObj)
 
-            CommandProcessor(commandObj,  activeApp = commandObj.client, focusRequired = true,
+            CommandProcessor(commandObj,  commandObj.client, focusRequired = true,
                 wsMap)
 
         }
