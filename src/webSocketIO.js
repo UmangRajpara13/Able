@@ -1,11 +1,7 @@
 import { WebSocketServer } from "ws";
-import { execSync, exec, spawn, spawnSync } from "child_process";
-import { homedir } from "os";
 import chalk from "chalk";
-// import { MessageHandlerGen2 } from "./Generations/Gen2/MessageHandlerGen2.js";
 import { MessageHandlerGen3 } from "./Generations/Gen3/MessageHandlerGen3.js";
 import { CommandProcessor, scheduledTask } from "./Generations/Gen3/commandProcessor.js";
-
 import { readFileSync } from 'fs';
 import https from 'https'
 import { join } from "path";
@@ -13,7 +9,6 @@ import { cwd } from "process";
 
 var wss
 var wsMap = new Map()
-var message 
 
 function SetupWebSocketServer(server) {
 
@@ -45,124 +40,34 @@ function SetupWebSocketServer(server) {
 
       message = JSON.parse(`${recievedData}`)
 
-      switch (message.split(":")[0]) {
-        case `id`:
-          console.log(chalk.magenta(`\n${recievedData}\n`));
+      switch (Object.keys(message)[0]) {
+          case 'id':
+          console.log(chalk.magenta(`\n${message["id"]}\n`));
 
-          if (wsMap.get(message.split(":")[1])) {
-            var allWsClients = wsMap.get(message.split(":")[1]);
+          if (wsMap.get(message["id"])) {
+            var allWsClients = wsMap.get(message["id"]);
             allWsClients.push(ws);
-            wsMap.set(message.split(":")[1], allWsClients);
+            wsMap.set(message["id"], allWsClients);
           } else {
-            wsMap.set(message.split(":")[1], [ws]);
+            wsMap.set(message["id"], [ws]);
           }
-          console.log(
-            `Services Connected : ${wsMap.keys()}, ${wsMap.get(message.split(":")[1]).length
-            }`
-          );
-          break;
-        case `stt`:
-
-          appendFile(
-            "record.txt",
-            `${message.split(":")[1].trim()}\n`,
-            (err) => {
-              if (err) throw err;
-              // console.log('The "data to append" was appended to file!')
-            }
-          );
-
-          query = message.split(":")[1].trim();
-          process.stdout.write(chalk.yellow(`${wsChannel === 'development' ? `[ D ]` : `[ P ]`}`));
-
-          // if sttRecipient return
-          if (sttRecipient) {
-            console.log(chalk.yellowBright(`redirecting \n${recievedData}\n`));
-
-            wsChannel === 'development' ? wsMapDev?.get(sttRecipient)?.forEach((client) => {
-              // console.log(client)
-              client.send(`sttRedirect,${query}`);
-            }) : wsMap?.get(sttRecipient)?.forEach((client) => {
-              // console.log(client)
-              client.send(`sttRedirect,${query}`);
-            })
-            return
-          }
+          console.log(scheduledTask)
           scheduledTask.forEach(commandObj => {
             if (commandObj.client == message["id"]) {
               CommandProcessor({ ...commandObj, isScheduledTask: true }, commandObj.client, false,
                 wsMap)
             }
-            // check if its global action
-            if (globalActionsKeys.includes(action)) {
-              process.stdout.write(chalk.green(`(Global) ${action} `));
-
-
-              //   var allWindow = await wm.getWindows();
-              //   allWindow = allWindow.map((winObj) => winObj.className);
-              //   var allWindowIDs = allWindow.map((winObj) => winObj.id);
-              //   var activeApp = `${execSync("./activeApp.sh")}`;
-
-              //   activeApp = activeApp
-              //     .split("=")[1]
-              //     .split(",")[1]
-              //     .replaceAll('"', "")
-              //     .trim();
-              commandObj = globalActions[action]
-              ActionProcessor(commandObj, wsChannel, undefined,
-                wsMap, wsMapDev)
-
-              return
-            } else {
-
-              // var command = raw.replaceAll(" ", "-");
-              var activeApp = `${execSync("./src/helper-scripts/activeApp.sh")}`
-                .split("=")[1]
-                .replace(", ", ".")
-                .replaceAll('"', "")
-                .trim();
-
-
-              if (!allActions[activeApp]) return
-              if (!allActions[activeApp][action]) return
-
-              process.stdout.write(chalk.grey(`(App) ${activeApp} (action) ${action}`));
-
-              commandObj = allActions[activeApp][action]
-
-              console.log(commandObj)
-
-              ActionProcessor(commandObj, wsChannel, activeApp,
-                wsMap, wsMapDev)
-
-            }
           })
-          break;
-        case `sttpid`:
-          sttpid = message.split(":")[1];
-          console.log(sttpid)
-          break;
-        case `awareness`:
-          const tmp = JSON.parse(message.substring(message.indexOf(':') + 1))
-          awareness = { ...awareness, [Object.keys(tmp)[0]]: Object.values(tmp)[0] }
-          globalActions = Object.assign({}, globalActions, Object.values(tmp)[0]["actions"])
-          var newActions = Object.keys(Object.values(tmp)[0]["actions"])
-          newActions = newActions.map(action => action)
-          globalActionsKeys = globalActionsKeys.concat(newActions); // its an array
-          break;
-        case `requestSTT`:
-          sttRecipient = JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"]
-          console.log('requestSTT', sttRecipient)
 
+          console.log(
+            `Services Connected : ${wsMap.get(message["id"])}, ${wsMap.get(message["id"]).length
+            }`
+          );
           break;
-        case `surrenderSTT`:
-          console.log('surrenderSTT', JSON.parse(message.substring(message.indexOf(':') + 1))["recipient"])
-          sttRecipient = null
-          break;
-        default:
-          console.log(`Unhandled PROD-> ${recievedData}`);
-          break;
-      }
+
+          default:
+            MessageHandlerGen3(message, wsMap)
+            break; }
     });
   });
   server.listen(1111, () => {
