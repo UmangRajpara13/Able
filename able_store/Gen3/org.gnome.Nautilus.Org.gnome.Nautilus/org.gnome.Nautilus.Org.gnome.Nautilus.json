@@ -1,0 +1,13 @@
+{
+    "global": {},
+    
+    "onActiveWindow": {
+        "open-in-code": {
+            "paraphrases":["open in code","open in vs code"],
+            "cli": "python3",
+            "args":["currNautPath.py"],
+            "debug": true,
+            "location": "/home/user/.local/share/nautilus/scripts"
+        }
+    }
+}

@@ -1,0 +1,167 @@
+{
+  "WM_CLASS": "code.Code",
+  "window": {
+    "focus": true,
+    "move": "undermouse",
+    "launch": {
+      "cli": "code",
+      "args": [],
+      "debug": false
+    }
+  },
+  "global": {
+    "jason": {
+      "paraphrases": [
+        "jason"
+      ]
+    },
+    "open-vs-code": {
+      "paraphrases": [
+        "open vs code"
+      ], 
+      "action": {
+        "cli": "code",
+        "args": [],
+        "debug": false
+      }
+    },
+    "initiate-staging-process": {
+      "paraphrases": [
+        "audit changes",
+        "initiate staging process",
+        "review changes",
+        "save this work"
+      ],
+      "action": {
+        "api": "audit-changes"
+      }
+    },
+    "stage-all-changes": {
+      "paraphrases": [
+        "stage all changes"
+      ],
+      "action": {
+        "api": "stage-all-changes"
+      }
+    },
+    "commit-changes-and-push": {
+      "paraphrases": [
+        "commit changes and push"
+      ],
+      "action": {
+        "api": "commit-changes-and-push"
+      }
+    },
+    "create-a-bash-script": {
+      "paraphrases": [
+        "new bash script"
+      ],
+      "action": {
+        "api": "create-a-bash-script"
+      }
+    },
+    "show-scripts": {
+      "paraphrases": [
+        "show scripts"
+      ],
+      "action": {
+        "api": "show-scripts"
+      }
+    },
+    "install-package": {
+      "paraphrases": [
+        "install package",
+        "install a package"
+      ],
+      "action": {
+        "api": "install-package"
+      }
+    }
+  },
+  "onActiveWindow": {
+    "say-hello": {
+      "paraphrases": [
+        "hello vs code",
+        "hello jason"
+      ],
+      "action": {
+        "api": "say-hello"
+      }
+    },
+    "new-window": {
+      "paraphrases": [
+        "new window"
+      ],
+      "action": {
+        "debug": false,
+        "cli": "code",
+        "args": [
+          "--new-window"
+        ]
+      }
+    },
+    "okay": {
+      "paraphrases": [
+        "looks good",
+        "alright",
+        "ok",
+        "okay"
+      ],
+      "action": {
+        "api": "git-stage-current-file"
+      }
+    },
+    "create-a-checkpoint": {
+      "paraphrases": [
+        "commit changes",
+        "create a checkpoint",
+        "create a commit"
+      ],
+      "action": {
+        "api": "git-commit"
+      }
+    },
+    "upload": {
+      "paraphrases": [
+        "push changes",
+        "upload"
+      ],
+      "action": {
+        "api": "git-push"
+      }
+    },
+    "open-folder": {
+      "paraphrases": [
+        "open folder"
+      ],
+      "action": {
+        "api": "open-folder"
+      }
+    },
+    "create-a-new-file": {
+      "paraphrases": [
+        "create a new file",
+        "create a file"
+      ],
+      "action": {
+        "api": "create-a-new-file"
+      }
+    },
+    "close-inactive-window": {
+      "paraphrases": [
+        "close inactive window"
+      ],
+      "action": {
+        "api": "close-inactive-windows"
+      }
+    },
+    "close-window": {
+      "paraphrases": [
+        "close window"
+      ],
+      "action": {
+        "api": "close-window"
+      }
+    }
+  }
+}

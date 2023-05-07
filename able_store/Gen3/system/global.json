@@ -1,0 +1,132 @@
+{
+  "global": {
+    "open-listening-service": {
+      "paraphrases": [],
+      "action": {
+        "cli": "code",
+        "args": [
+          "-r",
+          "."
+        ],
+        "location": "/home/user/Desktop/My Projects/able_dev/whisper-mint",
+        "debug": false
+      }
+    },
+    "settings": {
+      "paraphrases": [
+        "settings"
+      ],
+      "client": "gnome-control-center.Gnome-control-center",
+      "window": {
+        "focus": true,
+        "move": "undermouse",
+        "launch": {
+          "cli": "nohup",
+          "args": [
+            "gnome-control-center",
+            "&"
+          ],
+          "debug": false
+        }
+      }
+    },
+    "open-configuration": {
+      "paraphrases": [
+        "open configuration"
+      ],
+      "action": {
+        "cli": "nautilus",
+        "args": [
+          "able_store"
+        ],
+        "debug": false
+      }
+    },
+ 
+    "jenny": {
+      "paraphrases": [
+        "jenny"
+      ],
+      "client": "org.gnome.Nautilus.Org.gnome.Nautilus",
+      "window": {
+        "focus": true,
+        "move": "undermouse",
+        "launch": {
+          "cli": "nautilus",
+          "args": [],
+          "debug": false
+        }
+      }
+    },
+    "increase-brightness": {
+      "paraphrases": [
+        "brightness maximum",
+        "increase brightness"
+      ],
+      "action": {
+        "cli": "bash",
+        "args": [
+          "brightness-maximum.sh"
+        ],
+        "debug": false,
+        "location": "able_store/Gen3/system/scripts"
+      }
+    },
+    "brightness-minimum": {
+      "paraphrases": [
+        "brightness minimum",
+        "decrease brightness",
+        "lower brightness"
+      ],
+      "action": {
+        "cli": "bash",
+        "args": [
+          "brightness-minimum.sh"
+        ],
+        "debug": false,
+        "location": "able_store/Gen3/system/scripts"
+      }
+    },
+    "create-a-new-project": {
+      "paraphrases": [
+        "new project"
+      ],
+      "action": {
+        "cli": "bash",
+        "args": [
+          "new-project.sh"
+        ],
+        "debug": false,
+        "location": "able_store/Gen3/system/scripts"
+      }
+    },
+    "terminal": {
+      "paraphrases": [],
+      "client": "arrow.Arrow",
+      "window": {
+        "focus": true,
+        "move": "undermouse",
+        "launch": {
+          "cli": "arrow",
+          "args": [
+            ""
+          ],
+          "debug": false
+        }
+      }
+    },
+    "lock-screen": {
+      "paraphrases": [
+        "lock screen",
+        "lock computer"
+      ],
+      "action": {
+        "cli": "xdg-screensaver",
+        "args": [
+          "lock"
+        ],
+        "debug": false
+      }
+    }
+  }
+}

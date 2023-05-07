@@ -54,6 +54,8 @@ Thumbs.db
 *.wmv
 
 package-lock.json
-nohup.out
 memory/
-Playground/
+nohup.out
+/Playground
+record.txt
+TODO.txt

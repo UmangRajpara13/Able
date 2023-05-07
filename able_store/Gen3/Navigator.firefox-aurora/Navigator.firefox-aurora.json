@@ -1,0 +1,38 @@
+{
+    "global": {
+        "william": {
+            "paraphrases": [
+                "william"
+            ],
+            "client": "Navigator.firefox-aurora",
+            "window": {
+                "focus": true,
+                "move": "undermouse",
+                "launch": {
+                    "cli":"nohup",
+                    "args": ["/opt/firefox/firefox"],
+                    "debug": false
+                }
+            }
+        }
+    },
+    "onActiveWindow": {
+        "open-in-code": {
+            "paraphrases": [
+                "open in code",
+                "open in vs code"
+            ],
+            "client": "Navigator.firefox-aurora",
+            "action": {}
+        },
+        "close-inactive-tabs": {
+            "paraphrases": [
+                "close inactive tabs"
+            ],
+            "client": "Navigator.firefox-aurora",
+            "action": {
+                "api": "close-inactive-tabs"
+            }
+        }
+    }
+}

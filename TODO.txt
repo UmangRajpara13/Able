@@ -1,4 +1,4 @@
-* schnell run node scripts from cli
+* arrow run node scripts from cli
 * pass script args through cli 
 
 # Presets
