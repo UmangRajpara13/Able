@@ -273,15 +273,6 @@ export function sentenceProcessor(message, wsMap) {
         }
     } else {
         // Native, Global, API, CLI
-        try {
-            var activeApp = `${execSync(filePaths.activeApp)}`
-                .split("=")[1]
-                .replace(", ", ".")
-                .replaceAll('"', "")
-                .trim();
-        } catch (error) {
-            console.error(error)
-        }
 
         process.stdout.write(chalk.grey(`${action} `));
 
@@ -312,20 +303,10 @@ export function sentenceProcessor(message, wsMap) {
 
             commandObj = actionsOnActiveWindow[action]
 
-            var activeApp = `${execSync(filePaths.activeApp)}`
-                .split("=")[1]
-                .replace(", ", ".")
-                .replaceAll('"', "")
-                .trim();
-
-            if (commandObj.client !== activeApp) return
-
-
             process.stdout.write(chalk.green(`( onActiveWindow )`));
             console.log(commandObj)
 
-
-            CommandProcessor(commandObj, activeApp, focusRequired = true,
+            CommandProcessor(commandObj,  activeApp = commandObj.client, focusRequired = true,
                 wsMap)
 
         }

@@ -1,18 +1,20 @@
 import { exec, execSync, spawn } from 'child_process'
 import { join } from 'path';
 import { spawnProcess } from './manifestProcess.js'
+import { cwd } from 'process';
 
 export var scheduledTask = []
 
 const filePaths = {
-    ableStore: join(process.cwd(), 'able_store/Gen3'),
+    ableStore: join(cwd(), 'able_store/Gen3'),
     getWindowIDs: "./src/Generations/Gen3/helper-scripts/getWindowIDs.sh",
+    helperScripts: "./src/Generations/Gen3/helper-scripts",
     windowMove: "./src/Generations/Gen3/helper-scripts/windowMove.sh"
 }
 
 export function CrawlWeb(query) {
     const browse = spawn(`bash`, ["browse.sh", `Search=${query}`], {
-        cwd: join(filePaths.ableStore, "scripts"),
+        cwd: join(cwd(),filePaths.helperScripts),
         detached: true,
         stdio: "ignore",
     });
