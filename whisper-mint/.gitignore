@@ -3,7 +3,8 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
-whisper/
+/whisper
+/Playground
 
 # Node artifact files
 node_modules/
