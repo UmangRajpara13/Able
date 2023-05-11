@@ -100,6 +100,19 @@
         "location": "able_store/Gen3/system/scripts"
       }
     },
+    "create-a-react-app": {
+      "paraphrases": [
+        ""
+      ],
+      "action": {
+        "cli": "bash",
+        "args": [
+          "create-a-react-app.sh"
+        ],
+        "debug": false,
+        "location": "able_store/Gen3/system/scripts"
+      }
+    },
     "terminal": {
       "paraphrases": [],
       "client": "arrow.Arrow",
@@ -115,7 +128,7 @@
         }
       }
     },
-    "lock-screen": {
+    "lock-my-computer": {
       "paraphrases": [
         "lock screen",
         "lock computer"
