@@ -5,9 +5,6 @@ import { StartWebSocketServer } from "./webSocketIO.js";
 import { StartTranscription } from "./transcriptionService.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { readJsonSync } from "fs-extra/esm";
-import { cwd } from "process";
-import { WindowManager } from "./Gens/Gen3/helper-scripts/windowManager.js";
 
 const argv = yargs(hideBin(process.argv)).parse();
 // const port = process.env.NODE_ENV == "production" ? 1111 : 2222;

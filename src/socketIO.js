@@ -18,8 +18,6 @@ function SetupWebSocketServer(port) {
     console.log(`Connection Established! -> (PORT=${port})`);
     ws = ws;
     // console.log(ws)
-
-
     ws.on("close", (wsc) => {
       console.log("Connection Closed", wsc["_closeCode"], wsMap.keys());
 

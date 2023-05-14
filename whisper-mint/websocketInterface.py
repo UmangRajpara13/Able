@@ -79,10 +79,10 @@ async def record_buffer(**kwargs):
 
         # calc volume -> y
         y = np.sum(x)
-        print(y)  
+        # print(y)  
         # volume control y > threshold
         if y > threshold:
-            # print(y)
+            print(y)
 
             if listening_initialized:
                 # print('add highs to listening')
