@@ -18,13 +18,15 @@
   OS: Linux (very likely it will work on OSX without any tweaks. On Windows bash scripts(in able_store/*/scripts and anywhere in src) will have to converted into batch scripts)
   Bluetooth Microphone(Recommended because laptop microphone will pickup external noise very easily and bottleneck transcription service provide by Whisper)
 
-## Setup ##
+## Installation ##
 
     git clone git@github.com:UmangRajpara13/able.git
     cd ./able
     cd ./whisper-mint
+    python3 -m venv venv
     pip install -r requirements.txt
     cd..
+    npm install
 
 ## Run ##
 
