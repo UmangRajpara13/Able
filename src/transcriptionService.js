@@ -14,7 +14,7 @@ export function StartTranscription(port, argv) {
     // if (argv.stt != 'OFF')
  
 
-    stt = spawn(`./whisper-mint/whisper/bin/python3`,
+    stt = spawn(`./whisper-mint/venv/bin/python3`,
         [`./whisper-mint/main.py`, `${port}`],
         {
             detached: true,   

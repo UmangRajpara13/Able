@@ -21,15 +21,22 @@
 ## Installation ##
 
     git clone git@github.com:UmangRajpara13/able.git
-    cd ./able
-    cd ./whisper-mint
+    cd ./able/whisper-mint
     python3 -m venv venv
     pip install -r requirements.txt
-    cd..
+    cd ..
     npm install
 
 ## Run ##
 
-    npm run dev
+    # Option 1 #
+
+        npm run dev
+
+    # Option 2 #
+
+        gnome-terminal -- sh -c "npm run engine_only"
+        gnome-terminal -- sh -c "npm run stt_only"
+
 
 
