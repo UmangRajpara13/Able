@@ -54,8 +54,9 @@ Thumbs.db
 *.wmv
 
 package-lock.json
-memory/
+/memory
 nohup.out
 /Playground
 record.txt
 TODO.txt
+/whisper-mint
