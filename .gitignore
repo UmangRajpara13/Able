@@ -4,7 +4,6 @@
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
 #custom
-pid.json
 __pycache__/
 *.wav
 
