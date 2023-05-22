@@ -10,13 +10,13 @@
 
 </div >
 
-## Developed and tested with ##
+## Development Environment ##
 
-  python 3.9.9,
-  Nodejs 18.9,
-  Nvidia Graphics MX350(Pascal Architecture, CUDA capability 6.1, VRAM 2GB)
-  OS: Linux (very likely it will work on OSX without any tweaks. On Windows bash scripts(in able_store/*/scripts and anywhere in src) will have to converted into batch scripts)
-  Bluetooth Microphone(Recommended because laptop microphone will pickup external noise very easily and bottleneck transcription service provide by Whisper)
+  python 3.9.9  
+  Nodejs 18.9  
+  Nvidia Graphics MX350(Pascal Architecture, CUDA capability 6.1, VRAM 2GB)  
+  OS: Linux (very likely it will work on OSX without any tweaks. On Windows bash scripts(in able_store/*/scripts and anywhere in src) will have to converted into batch scripts)  
+  Bluetooth Microphone(Recommended because laptop microphone will pickup external noise very easily and bottleneck transcription service provide by Whisper)  
 
 It also requires the command-line tool [`ffmpeg`](https://ffmpeg.org/) to be installed on your system, which is available from most package managers:
 
