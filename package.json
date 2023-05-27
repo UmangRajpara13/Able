@@ -5,7 +5,7 @@
   "main": "able_engine.js",
   "type": "module",
   "scripts": {
-    "dev": "bash engine.sh",
+    "development": "bash engine.sh",
     "engine_only": "npx nodemon --watch src src/able.js --stt=OFF",
     "stt_only": "bash kill_stt.sh && bash stt_only.sh",
     "kill_stt":"bash kill_stt.sh"

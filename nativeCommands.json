@@ -21,6 +21,18 @@
                 ],
                 "debug": false
             }
+        },
+        "open-listening-service": {
+            "paraphrases": [],
+            "action": {
+                "cli": "code",
+                "args": [
+                    "-r",
+                    "."
+                ],
+                "location": "/home/user/able/whisper-mint",
+                "debug": false
+            }
         }
     }
 }

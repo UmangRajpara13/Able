@@ -22,7 +22,7 @@ process.on("SIGINT", () => {
         stdio: 'ignore',
     })
     killPort.unref();
-    const restart = spawn(`arrow`, ['/home/user/Desktop/My Projects/able_dev/engine.sh'], {
+    const restart = spawn(`arrow`, ['/home/user/Desktop/My Projects/able/engine.sh'], {
         detached: true,
         stdio: 'ignore',
     })
