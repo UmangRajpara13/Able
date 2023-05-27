@@ -1,7 +1,7 @@
 import { WebSocketServer } from "ws";
 import chalk from "chalk";
 import { MessageHandlerGen3 } from "./Generations/Gen3/MessageHandlerGen3.js";
-import { CommandProcessor, scheduledTask } from "./Generations/Gen3/commandProcessor.js";
+// import { CommandProcessor, scheduledTask } from "./Generations/Gen3/commandProcessor.js";
 import { readFileSync } from 'fs';
 import https from 'https'
 import { join } from "path";
@@ -9,6 +9,7 @@ import { cwd } from "process";
 
 var wss
 var wsMap = new Map()
+var focusedClientId = null
 
 function SetupWebSocketServer(server) {
 
@@ -41,7 +42,7 @@ function SetupWebSocketServer(server) {
       message = JSON.parse(`${recievedData}`)
 
       switch (Object.keys(message)[0]) {
-          case 'id':
+        case 'id':
           console.log(chalk.magenta(`\n${message["id"]}\n`));
 
           if (wsMap.get(message["id"])) {
@@ -51,23 +52,26 @@ function SetupWebSocketServer(server) {
           } else {
             wsMap.set(message["id"], [ws]);
           }
-          console.log(scheduledTask)
-          scheduledTask.forEach(commandObj => {
-            if (commandObj.client == message["id"]) {
-              CommandProcessor({ ...commandObj, isScheduledTask: true }, commandObj.client, false,
-                wsMap)
-            }
-          })
+          // console.log(scheduledTask)
+          // scheduledTask.forEach(commandObj => {
+          //   if (commandObj.client == message["id"]) {
+          //     CommandProcessor({ ...commandObj, isScheduledTask: true }, commandObj.client, false,
+          //       wsMap)
+          //   }
+          // })
 
           console.log(
             `Services Connected : ${wsMap.get(message["id"])}, ${wsMap.get(message["id"]).length
             }`
           );
           break;
-
-          default:
-            MessageHandlerGen3(message, wsMap)
-            break; }
+        case 'focusedClientId':
+          focusedClientId = message["focusedClientId"];
+          break;
+        default:
+          MessageHandlerGen3(message, wsMap, focusedClientId)
+          break;
+      }
     });
   });
   server.listen(1111, () => {
@@ -75,15 +79,15 @@ function SetupWebSocketServer(server) {
   });
 }
 
- 
 
-export function StartWebSocketServer(){
+
+export function StartWebSocketServer() {
 
   try {
 
     const options = {
-      key: readFileSync(join(cwd(),'src/certificates/server.key')),
-      cert: readFileSync(join(cwd(),'src/certificates/server.crt'))
+      key: readFileSync(join(cwd(), 'src/certificates/server.key')),
+      cert: readFileSync(join(cwd(), 'src/certificates/server.crt'))
     };
 
     const server = https.createServer(options);

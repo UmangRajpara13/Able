@@ -29,7 +29,7 @@ process.on("SIGINT", () => {
     restart.unref();
 });
 
-export function MessageHandlerGen3(message, wsMap) {
+export function MessageHandlerGen3(message, wsMap,focusedClientId) {
 
     message = message
     wsMap = wsMap
@@ -44,27 +44,27 @@ export function MessageHandlerGen3(message, wsMap) {
                     if (err) throw err;
                 }
             );
-            sentenceProcessor(message["stt"], wsMap)
+            sentenceProcessor(message["stt"], wsMap,focusedClientId)
             break;
         case `sttpid`:
             sttpid = message["sttpid"];
-            console.log(sttpid)
+            console.log(`sttPID`,sttpid)
             break;
-        case `awareness`:
-            dataPacket = message["awareness"]
-            awarenessProcessor(dataPacket)
-            break;
-        case `requestSTT`:
-            dataPacket = message["requestSTT"]["id"]
-            console.log('requestSTT', dataPacket)
-            RedirectSTT(dataPacket)
-            break;
-        case `surrenderSTT`:
-            console.log('surrenderSTT', message["surrenderSTT"]["id"])
-            RedirectSTT(null)
-            break;
+        // case `awareness`:
+        //     dataPacket = message["awareness"]
+        //     awarenessProcessor(dataPacket)
+        //     break;
+        // case `requestSTT`:
+        //     dataPacket = message["requestSTT"]["id"]
+        //     console.log('requestSTT', dataPacket)
+        //     RedirectSTT(dataPacket)
+        //     break;
+        // case `surrenderSTT`:
+            // console.log('surrenderSTT', message["surrenderSTT"]["id"])
+            // RedirectSTT(null)
+            // break;
         default:
-            console.log(`Unhandled -> ${message}`);
+            console.log(`Unhandled ->`,message);
             break;
     }
 }

@@ -2,21 +2,11 @@ import { spawn } from 'child_process'
 
 import chalk from "chalk";
 
-
-// export function activateWindow
-
-export function windowMove(){
-
-}
-
-
-
 export function spawnProcess(processObject) {
 
 
     const execute = spawn(
         processObject.cli,
-        // [`${raw}.sh`, `ActiveApp=${activeApp}`],
         processObject?.args,
         {
             ...(!processObject?.debug && {

@@ -1,14 +1,15 @@
 {
   "global": {
-    "open-listening-service": {
-      "paraphrases": [],
+    "william": {
+      "paraphrases": [
+        "william"
+      ],
+      "WM_CLASS": "microsoft-edge.Microsoft-edge",
       "action": {
-        "cli": "code",
+        "cli": "nohup",
         "args": [
-          "-r",
-          "."
+          "microsoft-edge"
         ],
-        "location": "/home/user/Desktop/My Projects/able_dev/whisper-mint",
         "debug": false
       }
     },
@@ -16,18 +17,15 @@
       "paraphrases": [
         "settings"
       ],
-      "client": "gnome-control-center.Gnome-control-center",
-      "window": {
-        "focus": true,
-        "move": "undermouse",
-        "launch": {
-          "cli": "nohup",
-          "args": [
-            "gnome-control-center",
-            "&"
-          ],
-          "debug": false
-        }
+      "WM_CLASS": "gnome-control-center.Gnome-control-center",
+
+      "action": {
+        "cli": "nohup",
+        "args": [
+          "gnome-control-center",
+          "&"
+        ],
+        "debug": false
       }
     },
     "open-configuration": {
@@ -42,12 +40,11 @@
         "debug": false
       }
     },
- 
     "jenny": {
       "paraphrases": [
         "jenny"
       ],
-      "client": "org.gnome.Nautilus.Org.gnome.Nautilus",
+      "WM_CLASS": "org.gnome.Nautilus.Org.gnome.Nautilus",
       "window": {
         "focus": true,
         "move": "undermouse",
@@ -96,6 +93,19 @@
         "args": [
           "new-project.sh"
         ],
+        "debug": true,
+        "location": "able_store/Gen3/system/scripts"
+      }
+    },
+    "create-python-environment": {
+      "paraphrases": [
+        ""
+      ],
+      "action": {
+        "cli": "bash",
+        "args": [
+          "create-python-environment.sh"
+        ],
         "debug": false,
         "location": "able_store/Gen3/system/scripts"
       }
@@ -109,13 +119,13 @@
         "args": [
           "create-a-react-app.sh"
         ],
-        "debug": false,
+        "debug": true,
         "location": "able_store/Gen3/system/scripts"
       }
     },
     "terminal": {
       "paraphrases": [],
-      "client": "arrow.Arrow",
+      "WM_CLASS": "arrow.Arrow",
       "window": {
         "focus": true,
         "move": "undermouse",

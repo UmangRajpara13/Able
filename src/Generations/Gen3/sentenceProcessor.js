@@ -8,18 +8,15 @@ process.on("uncaughtException", (error) => {
 import { CommandProcessor, CrawlWeb } from "./commandProcessor.js";
 import { cwd } from "process";
 import chalk from "chalk";
-import { execSync, spawn } from "child_process";
+import { spawn } from "child_process";
 import { watch } from "chokidar";
 import { readJson } from "fs-extra/esm";
 import { extname, join, sep } from "path";
 import { outputFile } from "fs-extra";
 import { homedir } from "os";
-import { readdir, readdirSync, statSync } from "fs";
+import { readdir, statSync } from "fs";
 
 var awareness = {}
-var sttRecipient = null
-
-var query, raw, action, focusRequired;
 var myProjects = {}
 
 var interrogativeWords = [
@@ -55,9 +52,6 @@ watchCommandConfig.on('all', (event, path) => {
             readJson(path, (err, file) => {
                 // console.log(file, Object.keys(file))
                 if (err) return
-
-
-
                 if (file?.global) {
                     Object.keys(file?.global).forEach(key => {
                         // console.log(file?.global[key], file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"])
@@ -65,9 +59,7 @@ watchCommandConfig.on('all', (event, path) => {
                         globalActions = {
                             ...globalActions, [key]: {
                                 ...file?.global[key],
-                                client: file?.global[key]["client"] ? file?.global[key]["client"] : file["WM_CLASS"],
-                                window: file?.global[key]["window"] ? file?.global[key]["window"] : file["window"]
-                            }
+                       }
                         }
                     });
 
@@ -80,8 +72,6 @@ watchCommandConfig.on('all', (event, path) => {
                         actionsOnActiveWindow = {
                             ...actionsOnActiveWindow, [key]: {
                                 ...file?.onActiveWindow[key],
-                                client: file?.onActiveWindow[key]["client"] ? file?.onActiveWindow[key]["client"] : file["WM_CLASS"],
-                                window: file?.onActiveWindow[key]["window"] ? file?.onActiveWindow[key]["window"] : file["window"]
                             }
                         }
                     })
@@ -112,11 +102,7 @@ watchMemoryConfig.on('all', (event, path) => {
                 globalActions = Object.assign({}, globalActions, file?.global)
                 globalActionsKeys = Object.keys(globalActions); // its an array
 
-                actionsOnActiveWindow = Object.assign({}, actionsOnActiveWindow, file?.onActiveWindow)
-                actionsOnActiveWindowKeys = Object.keys(actionsOnActiveWindow); // its an array
-
             });
-
         }
 
     } catch (error) { }
@@ -160,7 +146,6 @@ watchMyProjects.on('all', (event, directoryPath) => {
                 globalActionsKeys = Object.keys(globalActions)
                 // console.log(globalActionsKeys)
                 //   // open directory in VS Code
-                //   exec(`code "${directoryPath}"`);
             } else {
                 // console.log(directoryPath, '-----FM',)
                 const tmpObj = {
@@ -211,104 +196,86 @@ watchNativeCommands.on('all', (event, nativeCommandsPath) => {
                 nativeActions = file?.global
                 nativeActionsKeys = nativeActionsKeys.concat(Object.keys(nativeActions)); // its an array
                 // console.log(nativeActions,nativeActionsKeys)
-
             });
         }
 
     } catch (error) { }
 })
 
-export function sentenceProcessor(message, wsMap) {
-    (raw = "");
+export function sentenceProcessor(message, wsMap, focusedClientId) {
 
-    query = message.trim();
-
-    // if sttRecipient return
-    if (sttRecipient) {
-        console.log(chalk.yellowBright(`redirecting -> ${message}\n`));
-
-        wsMap?.get(sttRecipient)?.forEach((client) => {
-            // console.log(client)
-            const dataPacket = {
-                api: "stt-redirect",
-                payload: {
-                    text: query
-                }
-            }
-            client.send(JSON.stringify(dataPacket));
-        })
-
-        return
-    }
-    query = message.trim().toLowerCase();
-
-    raw = query
-        .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
-        .replace(/\s{2,}/g, " ");
-
-    if (raw.length == 0) return;
-
-    process.stdout.write(chalk.yellow(`( raw ) ${raw} `));
-
-    action = raw.replaceAll(" ", "-");
+    const spokenSentence = message.trim();
 
     var commandObj
 
     // check if its a Question
-    if (interrogativeWords.some((startString) => query.startsWith(startString)) |
-        query.endsWith("?") |
-        query.startsWith("google")
+    if (interrogativeWords.some((startString) => spokenSentence.startsWith(startString)) |
+        spokenSentence.endsWith("?") |
+        spokenSentence.startsWith("google")
     ) {
-        // if query ends with ? and its a command.
-        if (query.endsWith('?') &&
-            (globalActionsKeys.includes(action) || actionsOnActiveWindowKeys.includes(action))) {
+        // if spokenSentence ends with ? and its a command.
+        if (spokenSentence.endsWith('?') &&
+            (globalActionsKeys.includes(action))) {
             commandObj = globalActions[action] || allActions[action]
             CommandProcessor(commandObj)
             return
         }
-
-        if (query.startsWith("google")) {
-            query = query.replace("google", "").trim();
-            CrawlWeb(query)
+        if (spokenSentence.startsWith("google")) {
+            spokenSentence = spokenSentence.replace("google", "").trim();
+            CrawlWeb(spokenSentence)
         }
     } else {
-        // Native, Global, API, CLI
+        // check for Native / Global / API / CLI actions
 
-        process.stdout.write(chalk.grey(`${action} `));
+        const spokenSentenceLc = spokenSentence.toLowerCase();
+
+        const spokenSentenceRaw = spokenSentenceLc
+            .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+            .replace(/\s{2,}/g, " ");
+
+        if (spokenSentenceRaw.length == 0) return;
+
+        process.stdout.write(chalk.yellow(`( Raw ) ${spokenSentenceRaw} `));
+
+        const intent = spokenSentenceRaw.replaceAll(" ", "-");
+
+        process.stdout.write(chalk.grey(`\n( intent )  ${intent} \n`));
 
         // check if its native action
-        if (nativeActionsKeys.includes(action)) {
-            process.stdout.write(chalk.green(`( Native ) ${action} `));
+        if (nativeActionsKeys.includes(intent)) {
+            process.stdout.write(chalk.green(`( Native ) ${intent} `));
 
-            switch (action) {
+            switch (intent) {
                 case "open-your-source-code":
                     spawn('code', ['--new-window', '.'], { cwd: cwd(), detached: true, stdio: 'ignore' })
                     break;
                 default:
-                    CommandProcessor(nativeActions[action])
+                    CommandProcessor(nativeActions[intent])
                     break;
             }
             return
         }
         // check if its global action
-        if (globalActionsKeys.includes(action)) {
-            process.stdout.write(chalk.green(`( Global )`));
+        if (globalActionsKeys.includes(intent)) {
+            process.stdout.write(chalk.green(`\n ( Global )`));
 
-            commandObj = globalActions[action]
-            CommandProcessor(commandObj,  commandObj.client, focusRequired = false,
-                wsMap)
+            commandObj = globalActions[intent]
+            CommandProcessor(commandObj)
 
             return
-        } else if (actionsOnActiveWindow[action]) {
+        } else {
+            //  we dispatch the spoken sentence (spokenSentence)
+            //  to all windows of an app (focusedClientId), only the window with focus
+            //  should process it! 
 
-            commandObj = actionsOnActiveWindow[action]
+            // process.stdout.write(chalk.green(`( onActiveWindow )`));
 
-            process.stdout.write(chalk.green(`( onActiveWindow )`));
-            console.log(commandObj)
-
-            CommandProcessor(commandObj,  commandObj.client, focusRequired = true,
-                wsMap)
-
+            focusedClientId && wsMap.get(focusedClientId).forEach((client) => {
+                const dataPacket = {
+                    spokenSentence: spokenSentence
+                }
+                client.send(JSON.stringify(dataPacket));
+            })
         }
     }
 }

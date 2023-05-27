@@ -4,7 +4,7 @@
             "paraphrases": [
                 "william"
             ],
-            "client": "Navigator.firefox-aurora",
+            "WM_CLASS": "Navigator.firefox-aurora",
             "window": {
                 "focus": true,
                 "move": "undermouse",
@@ -22,14 +22,14 @@
                 "open in code",
                 "open in vs code"
             ],
-            "client": "Navigator.firefox-aurora",
+            "WM_CLASS": "Navigator.firefox-aurora",
             "action": {}
         },
         "close-inactive-tabs": {
             "paraphrases": [
                 "close inactive tabs"
             ],
-            "client": "Navigator.firefox-aurora",
+            "WM_CLASS": "Navigator.firefox-aurora",
             "action": {
                 "api": "close-inactive-tabs"
             }

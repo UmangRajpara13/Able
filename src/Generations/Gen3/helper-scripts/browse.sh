@@ -12,4 +12,5 @@ done
 
 # use here your expected variables
 
-/opt/firefox/firefox --new-tab "https://www.google.com/search?q=$Search"
+# /opt/firefox/firefox --new-tab "https://www.google.com/search?q=$Search"
+microsoft-edge "https://www.google.com/search?q=$Search"
