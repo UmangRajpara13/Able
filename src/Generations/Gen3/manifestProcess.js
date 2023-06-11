@@ -8,17 +8,9 @@ export function spawnProcess(processObject) {
     const execute = spawn(
         processObject.cli,
         processObject?.args,
-        {
-            ...(!processObject?.debug && {
-                detached: true,
-                stdio: "ignore"
-            }),
-            ...(processObject?.location && {
-                cwd: processObject?.location
-            })
-        }
+        processObject?.options
     );
-    if (processObject?.debug) {
+    if (!processObject?.options?.detached && processObject?.options?.stdio !== 'ignore') {
         execute.stdout.on("data", (data) => {
             process.stdout.write(`<< ${data} `.replace("\n", ""));
         });

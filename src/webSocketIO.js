@@ -1,7 +1,6 @@
 import { WebSocketServer } from "ws";
 import chalk from "chalk";
 import { MessageHandlerGen3 } from "./Generations/Gen3/MessageHandlerGen3.js";
-// import { CommandProcessor, scheduledTask } from "./Generations/Gen3/commandProcessor.js";
 import { readFileSync } from 'fs';
 import https from 'https'
 import { join } from "path";
@@ -33,10 +32,8 @@ function SetupWebSocketServer(server) {
 
     ws.on("error", (error) => { console.log(`!!! Connection Failed ${error}`); });
 
-    var query, raw, action;
-
     ws.on("message", async (recievedData) => {
-      (raw = "");
+
       var message = `${recievedData}`
 
       message = JSON.parse(`${recievedData}`)
@@ -52,14 +49,6 @@ function SetupWebSocketServer(server) {
           } else {
             wsMap.set(message["id"], [ws]);
           }
-          // console.log(scheduledTask)
-          // scheduledTask.forEach(commandObj => {
-          //   if (commandObj.client == message["id"]) {
-          //     CommandProcessor({ ...commandObj, isScheduledTask: true }, commandObj.client, false,
-          //       wsMap)
-          //   }
-          // })
-
           console.log(
             `Services Connected : ${wsMap.get(message["id"])}, ${wsMap.get(message["id"]).length
             }`
@@ -67,6 +56,7 @@ function SetupWebSocketServer(server) {
           break;
         case 'focusedClientId':
           focusedClientId = message["focusedClientId"];
+          console.log(`focusedClientId: ${focusedClientId}`)
           break;
         default:
           MessageHandlerGen3(message, wsMap, focusedClientId)

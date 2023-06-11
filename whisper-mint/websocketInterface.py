@@ -50,7 +50,7 @@ async def record_buffer(**kwargs):
     event = asyncio.Event()
     idx = 0
     idy = 0
-    threshold = 6 #init volume
+    threshold = 2 #init volume
     listening_initialized = False
     timer = Timer()
     prefix_indata = np.empty((100_000_000, 1), dtype='float32')
@@ -96,7 +96,7 @@ async def record_buffer(**kwargs):
                 # print('Start Listening')
 
                 listening_initialized = True
-                threshold = 4 # lower vol threshold after speaker started speaking
+                threshold = 1 # lower vol threshold after speaker started speaking
 
                 # here idx is 0, add left hand buffer before threshold
                 buffer[idx:100] = prefix_indata[-101:-1]
@@ -110,7 +110,7 @@ async def record_buffer(**kwargs):
             if listening_initialized:
                 if timer.is_running():
                     if timer.is_timeout():
-                        threshold = 6 # restore init volume
+                        threshold = 2 # restore init volume
 
                         buffer = buffer[0:idx]
 
@@ -145,9 +145,6 @@ async def record_buffer(**kwargs):
                                 file.close()
                     
                             transcription()
-                            # asyncio.create_task(transcription())
-                            # loop.run_forever()
-                            # asyncio.create_task()
 
                             listening_initialized = False
                             timer.stop()
@@ -158,9 +155,6 @@ async def record_buffer(**kwargs):
 
                             highVolIndex = 0
 
-                        # loop.call_soon_threadsafe(event.set)
-                        # stream.abort()
-                        # raise sd.CallbackStop
                     else:
                         # print('await timer')
 

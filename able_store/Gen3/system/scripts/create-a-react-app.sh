@@ -31,8 +31,10 @@ while true; do
 
     # Check the exit status of the dialog box
     if [[ $? -eq 0 ]]; then
-        # Display another yes/no dialog box
-        git init
+
+        git init;
+        git branch -m main;
+        
         zenity --question --text "Do you want to make this remote repository Private?" --width 500
 
         if [[ $? -eq 0 ]]; then
@@ -92,7 +94,8 @@ while true; do
             else
                 # No error occurred, display a success message using Zenity
                 github_username=$(echo "$github_userinfo" | grep '"login"' | cut -d '"' -f 4);
-                git remote add origin git@github.com:"$github_username"/"${project_name// /-}".git
+                git remote add origin git@github.com:"$github_username"/"${project_name// /-}".git;
+               
                 break
             fi
         done
@@ -101,7 +104,10 @@ while true; do
         # User selected "No", continue with rest of script
         echo "Continuing with rest of the script"
     fi
-
+    
+    # git fetch origin;
+    # git push -u origin main;
+    
     code "$project_path/$project_name"
 
     # Exit loop

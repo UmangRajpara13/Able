@@ -19,20 +19,7 @@ import { readdir, statSync } from "fs";
 var awareness = {}
 var myProjects = {}
 
-var interrogativeWords = [
-    "what",
-    "which",
-    "when",
-    "where",
-    "how",
-    "whom",
-    "who",
-    "weather",
-    "why",
-    "whose",
-];
-
-var globalActions, globalActionsKeys, actionsOnActiveWindow = {}, actionsOnActiveWindowKeys = []
+var globalActions, globalActionsKeys
 
 const filePaths = {
     ableStore: join(process.cwd(), 'able_store/Gen3'),
@@ -59,30 +46,16 @@ watchCommandConfig.on('all', (event, path) => {
                         globalActions = {
                             ...globalActions, [key]: {
                                 ...file?.global[key],
-                       }
+                            }
                         }
                     });
 
                     globalActionsKeys = globalActionsKeys.concat(Object.keys(file?.global))
                 }
-
-                if (file?.onActiveWindow) {
-                    Object.keys(file?.onActiveWindow).forEach(key => {
-                        // console.log(key)
-                        actionsOnActiveWindow = {
-                            ...actionsOnActiveWindow, [key]: {
-                                ...file?.onActiveWindow[key],
-                            }
-                        }
-                    })
-                    actionsOnActiveWindowKeys = actionsOnActiveWindowKeys.concat(Object.keys(file?.onActiveWindow))
-                }
             });
         }
         // console.log(`added Actions`, globalActionsKeys, actionsOnActiveWindowKeys)
         // console.log(`added Actions`, Object.keys(globalActions))
-        // console.log(`added Actions`, globalActions)
-        // console.log(`added Actions`, Object.keys(actionsOnActiveWindowKeys))
 
     } catch (error) { }
 })
@@ -145,9 +118,7 @@ watchMyProjects.on('all', (event, directoryPath) => {
                 globalActions = Object.assign({}, globalActions, tmpObj)
                 globalActionsKeys = Object.keys(globalActions)
                 // console.log(globalActionsKeys)
-                //   // open directory in VS Code
             } else {
-                // console.log(directoryPath, '-----FM',)
                 const tmpObj = {
                     [`open-${directoryPath.substring(directoryPath.lastIndexOf(sep) + 1).replaceAll(' ', '-')}`]: {
                         client: "org.gnome.Nautilus.Org.gnome.Nautilus",
@@ -205,43 +176,37 @@ watchNativeCommands.on('all', (event, nativeCommandsPath) => {
 export function sentenceProcessor(message, wsMap, focusedClientId) {
 
     const spokenSentence = message.trim();
+    const spokenSentenceLc = spokenSentence.toLowerCase();
 
+    const spokenSentenceRaw = spokenSentenceLc
+        .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+        .replace(/\s{2,}/g, " ");
+
+    if (spokenSentenceRaw.length == 0) return;
+
+    process.stdout.write(chalk.yellow(`( Raw ) ${spokenSentenceRaw} `));
+
+    const intent = spokenSentenceRaw.replaceAll(" ", "-");
+
+    process.stdout.write(chalk.grey(`\n( intent )  ${intent} \n`));
     var commandObj
 
     // check if its a Question
-    if (interrogativeWords.some((startString) => spokenSentence.startsWith(startString)) |
-        spokenSentence.endsWith("?") |
-        spokenSentence.startsWith("google")
+    if (spokenSentence.endsWith("?") |
+        spokenSentenceLc.startsWith("google")
     ) {
         // if spokenSentence ends with ? and its a command.
-        if (spokenSentence.endsWith('?') &&
-            (globalActionsKeys.includes(action))) {
-            commandObj = globalActions[action] || allActions[action]
+        if (spokenSentence.endsWith('?') && (globalActionsKeys.includes(intent))) {
+            commandObj = globalActions[intent]
             CommandProcessor(commandObj)
             return
         }
-        if (spokenSentence.startsWith("google")) {
-            spokenSentence = spokenSentence.replace("google", "").trim();
-            CrawlWeb(spokenSentence)
+        if (spokenSentenceLc.startsWith("google")) {
+            CrawlWeb(spokenSentenceLc.replace("google", "").trim())
         }
     } else {
         // check for Native / Global / API / CLI actions
 
-        const spokenSentenceLc = spokenSentence.toLowerCase();
-
-        const spokenSentenceRaw = spokenSentenceLc
-            .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
-            .replace(/\s{2,}/g, " ");
-
-        if (spokenSentenceRaw.length == 0) return;
-
-        process.stdout.write(chalk.yellow(`( Raw ) ${spokenSentenceRaw} `));
-
-        const intent = spokenSentenceRaw.replaceAll(" ", "-");
-
-        process.stdout.write(chalk.grey(`\n( intent )  ${intent} \n`));
-
-        // check if its native action
         if (nativeActionsKeys.includes(intent)) {
             process.stdout.write(chalk.green(`( Native ) ${intent} `));
 

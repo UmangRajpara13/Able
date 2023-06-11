@@ -1,4 +1,4 @@
-{
+ {
   "global": {
     "william": {
       "paraphrases": [
@@ -13,19 +13,52 @@
         "debug": false
       }
     },
-    "settings": {
+    "open-downloads": {
+      "paraphrases": [
+        "open downloads"
+      ],
+      "action": {
+        "cli": "nautilus",
+        "args": [
+          "~/Downloads"
+        ],
+        "options": {
+          "shell": true
+        }
+      }
+    },
+    "show-my-projects": {
+      "paraphrases": [],
+      "action": {
+        "cli": "nautilus",
+        "args": [
+          "~/Desktop/My\\ Projects"
+        ],
+        "options": {
+          "shell": true
+        }
+      }
+    },
+    "open-vs-code": {
+      "paraphrases": [
+        "open vs code"
+      ],
+      "action": {
+        "cli": "code",
+        "args": []
+      }
+    },
+    "open-system-settings": {
       "paraphrases": [
         "settings"
       ],
       "WM_CLASS": "gnome-control-center.Gnome-control-center",
-
       "action": {
         "cli": "nohup",
         "args": [
           "gnome-control-center",
           "&"
-        ],
-        "debug": false
+        ]
       }
     },
     "open-configuration": {
@@ -36,8 +69,7 @@
         "cli": "nautilus",
         "args": [
           "able_store"
-        ],
-        "debug": false
+        ]
       }
     },
     "jenny": {
@@ -45,14 +77,9 @@
         "jenny"
       ],
       "WM_CLASS": "org.gnome.Nautilus.Org.gnome.Nautilus",
-      "window": {
-        "focus": true,
-        "move": "undermouse",
-        "launch": {
-          "cli": "nautilus",
-          "args": [],
-          "debug": false
-        }
+      "action": {
+        "cli": "nautilus",
+        "args": []
       }
     },
     "increase-brightness": {
@@ -65,8 +92,9 @@
         "args": [
           "brightness-maximum.sh"
         ],
-        "debug": false,
-        "location": "able_store/Gen3/system/scripts"
+        "options": {
+          "cwd": "able_store/Gen3/system/scripts"
+        }
       }
     },
     "brightness-minimum": {
@@ -80,8 +108,9 @@
         "args": [
           "brightness-minimum.sh"
         ],
-        "debug": false,
-        "location": "able_store/Gen3/system/scripts"
+        "options": {
+          "cwd": "able_store/Gen3/system/scripts"
+        }
       }
     },
     "create-a-new-project": {
@@ -93,8 +122,9 @@
         "args": [
           "new-project.sh"
         ],
-        "debug": true,
-        "location": "able_store/Gen3/system/scripts"
+        "options": {
+          "cwd": "able_store/Gen3/system/scripts"
+        }
       }
     },
     "create-python-environment": {
@@ -106,8 +136,9 @@
         "args": [
           "create-python-environment.sh"
         ],
-        "debug": false,
-        "location": "able_store/Gen3/system/scripts"
+        "options": {
+          "cwd": "able_store/Gen3/system/scripts"
+        }
       }
     },
     "create-a-react-app": {
@@ -119,8 +150,9 @@
         "args": [
           "create-a-react-app.sh"
         ],
-        "debug": true,
-        "location": "able_store/Gen3/system/scripts"
+        "options": {
+          "cwd": "able_store/Gen3/system/scripts"
+        }
       }
     },
     "terminal": {
@@ -133,9 +165,21 @@
           "cli": "arrow",
           "args": [
             ""
-          ],
-          "debug": false
+          ]
         }
+      }
+    },
+    "minimize-all-apps": {
+      "paraphrases": [
+        "minimize all apps",
+        "show desktop"
+      ],
+      "action": {
+        "cli": "wmctrl",
+        "args": [
+          "-k",
+          "on"
+        ]
       }
     },
     "lock-my-computer": {
@@ -147,8 +191,7 @@
         "cli": "xdg-screensaver",
         "args": [
           "lock"
-        ],
-        "debug": false
+        ]
       }
     }
   }
