@@ -15,4 +15,4 @@ export PATH=/usr/local/cuda/bin:$PATH
 # export CUDA_HOME=/usr/local/cuda
 # export LD_LIBRARY_PATH=$CUDA_HOME/lib64
 
-./whisper-mint/venv/bin/python3 ./whisper-mint/main.py 1111
+./microphone/venv/bin/python3 ./microphone/main.py 1111

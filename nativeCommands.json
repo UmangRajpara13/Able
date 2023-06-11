@@ -8,7 +8,7 @@
                     "-r",
                     "."
                 ],
-                "location": "/home/user/able/whisper-mint",
+                "location": "/home/user/able/microphone",
                 "debug": false
             }
         }

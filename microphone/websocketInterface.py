@@ -14,11 +14,6 @@ import ssl
 
 ws=None
 
-
-# def Transcribe(arr):
-#     result = model.transcribe(arr)
-#     asyncio.run(send_message('stt:' + result["text"]))
-
 def transcription():
     try:
         # This launches a subprocess to decode audio while down-mixing and resampling as necessary.

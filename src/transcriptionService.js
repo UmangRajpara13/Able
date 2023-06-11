@@ -14,8 +14,8 @@ export function StartTranscription(port, argv) {
     // if (argv.stt != 'OFF')
  
 
-    stt = spawn(`./whisper-mint/venv/bin/python3`,
-        [`./whisper-mint/main.py`, `${port}`],
+    stt = spawn(`./microphone/venv/bin/python3`,
+        [`./microphone/main.py`, `${port}`],
         {
             detached: true,   
             stdio: ['ignore', 'ignore', 'ignore'] 

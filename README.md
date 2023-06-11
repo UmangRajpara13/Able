@@ -41,7 +41,7 @@ scoop install ffmpeg
 ## Installation ##
 
     git clone git@github.com:UmangRajpara13/able.git
-    cd ./able/whisper-mint
+    cd ./able/microphone
     python3 -m venv venv
     source "venv/bin/activate"
     pip install -r requirements.txt
