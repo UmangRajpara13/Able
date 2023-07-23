@@ -5,11 +5,11 @@
   "main": "able_engine.js",
   "type": "module",
   "scripts": {
-    "development": "bash engine.sh",
-    "engine_only": "npx nodemon --watch src src/able.js --stt=OFF",
-    "stt_only": "bash kill_stt.sh && bash stt_only.sh",
-    "kill_stt":"bash kill_stt.sh"
-  },
+    "start": "npx nodemon --watch src src/able.js",
+    "able": "npx nodemon --watch src src/able.js --stt=OFF",
+    "listen": "bash stop_listening.sh && bash listen.sh",
+    "stop_listening":"bash stop_listening.sh"
+    },
   "author": "umang",
   "license": "ISC",
   "dependencies": {

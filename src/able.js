@@ -27,7 +27,7 @@ process.on("uncaughtException", (error) => {
   // console.log("uncaught\n", error);
   if (error.code == "EADDRINUSE") {
     const kill = spawn(`bash`, ['killPort.sh'], {
-      cwd: './src/Gens/Gen3/helper-scripts',
+      cwd: './src/Generations/Gen3/helper-scripts',
       detached: true,
       stdio: 'ignore',
     })

@@ -58,5 +58,5 @@ nohup.out
 /Playground
 record.txt
 TODO.txt
-/microphone/venv
-microphone/debg.ipynb
+/listen/venv
+listen/debg.ipynb

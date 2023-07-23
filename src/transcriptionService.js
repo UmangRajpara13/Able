@@ -14,8 +14,8 @@ export function StartTranscription(port, argv) {
     // if (argv.stt != 'OFF')
  
 
-    stt = spawn(`./microphone/venv/bin/python3`,
-        [`./microphone/main.py`, `${port}`],
+    stt = spawn(`./listen/venv/bin/python3`,
+        [`./listen/main.py`, `${port}`],
         {
             detached: true,   
             stdio: ['ignore', 'ignore', 'ignore'] 

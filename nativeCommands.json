@@ -8,7 +8,7 @@
                     "-r",
                     "."
                 ],
-                "location": "/home/user/able/microphone",
+                "location": "/home/user/able/listen",
                 "debug": false
             }
         }

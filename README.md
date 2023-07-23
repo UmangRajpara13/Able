@@ -10,6 +10,10 @@
 
 </div >
 
+## Demo ##
+
+https://www.youtube.com/watch?v=Gv67ConwjhY
+
 ## Development Environment ##
 
   python 3.9.9  
@@ -41,7 +45,7 @@ scoop install ffmpeg
 ## Installation ##
 
     git clone git@github.com:UmangRajpara13/able.git
-    cd ./able/microphone
+    cd ./able/listen
     python3 -m venv venv
     source "venv/bin/activate"
     pip install -r requirements.txt
@@ -49,16 +53,16 @@ scoop install ffmpeg
     cd ..
     npm install
 
-## Run ##
+## Run ##   
 
-    # Option 1 #
 
-        npm run dev
+#### In 1st Terminal window  
 
-    # Option 2 #
+    npm run able
 
-        gnome-terminal -- sh -c "npm run engine_only"
-        gnome-terminal -- sh -c "npm run stt_only"
+#### and in 2nd Terminal window  
+
+    npm run listen
 
 
 

@@ -103,15 +103,16 @@ watchMyProjects.on('all', (event, directoryPath) => {
                 // console.log(directoryPath, '-----vscode',)
                 const tmpObj = {
                     [`open-${directoryPath.substring(directoryPath.lastIndexOf(sep) + 1).replaceAll(' ', '-')}`]: {
-                        client: "code.Code",
                         action: {
                             cli: "code",
                             args: [
                                 "--new-window",
                                 "."
                             ],
-                            location: directoryPath,
-                            debug: false
+                            options: {
+                                cwd: directoryPath
+                            }
+
                         }
                     }
                 }

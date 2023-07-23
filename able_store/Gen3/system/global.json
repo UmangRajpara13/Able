@@ -1,18 +1,5 @@
  {
   "global": {
-    "william": {
-      "paraphrases": [
-        "william"
-      ],
-      "WM_CLASS": "microsoft-edge.Microsoft-edge",
-      "action": {
-        "cli": "nohup",
-        "args": [
-          "microsoft-edge"
-        ],
-        "debug": false
-      }
-    },
     "open-downloads": {
       "paraphrases": [
         "open downloads"
@@ -52,7 +39,6 @@
       "paraphrases": [
         "settings"
       ],
-      "WM_CLASS": "gnome-control-center.Gnome-control-center",
       "action": {
         "cli": "nohup",
         "args": [
@@ -76,44 +62,12 @@
       "paraphrases": [
         "jenny"
       ],
-      "WM_CLASS": "org.gnome.Nautilus.Org.gnome.Nautilus",
       "action": {
         "cli": "nautilus",
         "args": []
       }
     },
-    "increase-brightness": {
-      "paraphrases": [
-        "brightness maximum",
-        "increase brightness"
-      ],
-      "action": {
-        "cli": "bash",
-        "args": [
-          "brightness-maximum.sh"
-        ],
-        "options": {
-          "cwd": "able_store/Gen3/system/scripts"
-        }
-      }
-    },
-    "brightness-minimum": {
-      "paraphrases": [
-        "brightness minimum",
-        "decrease brightness",
-        "lower brightness"
-      ],
-      "action": {
-        "cli": "bash",
-        "args": [
-          "brightness-minimum.sh"
-        ],
-        "options": {
-          "cwd": "able_store/Gen3/system/scripts"
-        }
-      }
-    },
-    "create-a-new-project": {
+     "create-a-new-project": {
       "paraphrases": [
         "new project"
       ],
@@ -126,21 +80,7 @@
           "cwd": "able_store/Gen3/system/scripts"
         }
       }
-    },
-    "create-python-environment": {
-      "paraphrases": [
-        ""
-      ],
-      "action": {
-        "cli": "bash",
-        "args": [
-          "create-python-environment.sh"
-        ],
-        "options": {
-          "cwd": "able_store/Gen3/system/scripts"
-        }
-      }
-    },
+   },
     "create-a-react-app": {
       "paraphrases": [
         ""
@@ -152,20 +92,6 @@
         ],
         "options": {
           "cwd": "able_store/Gen3/system/scripts"
-        }
-      }
-    },
-    "terminal": {
-      "paraphrases": [],
-      "WM_CLASS": "arrow.Arrow",
-      "window": {
-        "focus": true,
-        "move": "undermouse",
-        "launch": {
-          "cli": "arrow",
-          "args": [
-            ""
-          ]
         }
       }
     },
