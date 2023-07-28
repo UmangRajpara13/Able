@@ -10,16 +10,6 @@
 Add voice commands to any Desktop Apps with system-wide shared Speech to Text Engine.​
 </div >
 
-## Demo ##
-
-1) Short (Features Only)  
-https://youtu.be/gX7cKdbn6o0  
-2) Long (Features + Technical)  
-https://youtu.be/VjWybUCFncI  
-
-
-The Terminal used in the project is [Arrow Terminal](https://github.com/thevoyagingstar/arrow)  
-
 ## Software Environment ##
 
   python 3.9.9  
