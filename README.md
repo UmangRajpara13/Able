@@ -78,7 +78,7 @@ scoop install ffmpeg
 
 Avoid using in-built microphone of your laptop, External headset with Microphone is recommended
 
-## Intergrate Voice Support in your Extensions/Apps
+## Intergrate Voice Support in your Extensions/Apps (Beta)
 
 The documentaion is under development. In the meantime, please refer to source code of this [Extension](https://github.com/thevoyagingstar/code-able) for VS Code
 
