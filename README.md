@@ -69,7 +69,7 @@ scoop install ffmpeg
 
 #### In 1st Terminal window  
 
-    npm run able
+    npm run engine
 
 #### and in 2nd Terminal window.
 
