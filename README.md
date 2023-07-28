@@ -6,7 +6,7 @@
   </a>
 </p>  
 
-# Able Voice Assisstant for Computers #
+# Able Voice Interface for Computers #
 Add voice commands to any Desktop Apps with system-wide shared Speech to Text Engine.​
 </div >
 
