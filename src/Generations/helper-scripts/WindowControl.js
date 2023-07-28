@@ -25,7 +25,7 @@ async function RunSystemCommand() {
 
     const execute = spawn(`bash`, [`jenny.sh`, `ActiveApp=${activeApp}`, `WindowClassNames= ${WindowClassNames}`,
         `WindowIDs=${WindowIDs}`], {
-        cwd: join(process.cwd(), './able_store/system'),
+        cwd: join(process.cwd(), './universal-commands/system'),
         // detached: process.NODE_ENV == 'development' ? false : true,
         // stdio: process.NODE_ENV == 'development' ? 'pipe' : 'ignore',
     })

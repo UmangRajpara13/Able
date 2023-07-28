@@ -5,8 +5,8 @@
   "main": "able_engine.js",
   "type": "module",
   "scripts": {
-    "start": "npx nodemon --watch src src/able.js",
-    "able": "npx nodemon --watch src src/able.js --stt=OFF",
+    "start": "npx nodemon --watch src src/engine.js",
+    "engine": "npx nodemon --watch src src/engine.js --stt=OFF",
     "listen": "bash stop_listening.sh && bash listen.sh",
     "stop_listening":"bash stop_listening.sh"
     },

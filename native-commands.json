@@ -1,5 +1,5 @@
 {
-    "global": {
+    "native-commands": {
          "open-listening-service": {
             "paraphrases": [],
             "action": {

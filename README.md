@@ -7,22 +7,33 @@
 </p>  
 
 # Able Voice Assisstant for Computers #
-
+Add voice commands to any Desktop Apps with system-wide shared Speech to Text Engine.​
 </div >
 
 ## Demo ##
 
-https://www.youtube.com/watch?v=Gv67ConwjhY
+1) Short (Features Only)  
+https://youtu.be/gX7cKdbn6o0  
+2) Long (Features + Technical)  
+https://youtu.be/VjWybUCFncI  
 
-## Development Environment ##
+
+The Terminal used in the project is [Arrow Terminal](https://github.com/thevoyagingstar/arrow)  
+
+## Software Environment ##
 
   python 3.9.9  
   Nodejs 18.9  
-  Nvidia Graphics MX350(Pascal Architecture, CUDA capability 6.1, VRAM 2GB)  
-  OS: Linux (very likely it will work on OSX without any tweaks. On Windows bash scripts(in able_store/*/scripts and anywhere in src) will have to converted into batch scripts)  
-  Bluetooth Microphone(Recommended because laptop microphone will pickup external noise very easily and bottleneck transcription service provide by Whisper)  
+  OS: Linux (very likely it will work on OSX without any tweaks. On Windows bash scripts(in ./universal-commands/scripts and anywhere in src) will have to converted into batch scripts)  
 
-It also requires the command-line tool [`ffmpeg`](https://ffmpeg.org/) to be installed on your system, which is available from most package managers:
+## Hardware Config used during Development and Execution ##
+
+System Ram : 8Gb (2x4Gb) [Recommended > 16Gb]  
+Graphic card : Nvidia Graphics MX350(Pascal Architecture, CUDA capability 6.1, VRAM 2GB)  
+Microphone : External Bluetooth Headeset with Microphone Arm (Recommended). Avoid using in-built microphone of your laptop.  
+
+The project uses whisper by OpenAI which requires the command-line tool [`ffmpeg`](https://ffmpeg.org/) to be installed on your system, which is available from most package managers:
+
 
 ```bash
 # on Ubuntu or Debian
@@ -60,9 +71,23 @@ scoop install ffmpeg
 
     npm run able
 
-#### and in 2nd Terminal window  
+#### and in 2nd Terminal window  recommended.
 
     npm run listen
 
 
+Avoid using in-built microphone of your laptop, External headset with Microphone is 
 
+## Intergrate Voice Support in your Extensions/Apps
+
+The documentaion is under development. In the meantime, please refer to source code of this [Extension](https://github.com/thevoyagingstar/code-able) for VS Code
+
+
+## Architecture ##
+
+
+<p align="center">
+  <a aria-label="Arrow logo" href="">
+    <img src="./assets/able_architecture.jpg">
+  </a>
+</p>  

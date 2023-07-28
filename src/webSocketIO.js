@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
 import chalk from "chalk";
-import { MessageHandlerGen3 } from "./Generations/Gen3/MessageHandlerGen3.js";
+import { MessageHandlerGen3 } from "./Generations/MessageHandlerGen3.js";
 import { readFileSync } from 'fs';
 import https from 'https'
 import { join } from "path";

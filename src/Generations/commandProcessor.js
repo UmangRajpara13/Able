@@ -4,10 +4,10 @@ import { spawnProcess } from './manifestProcess.js'
 import { cwd } from 'process';
 
 const filePaths = {
-    ableStore: join(cwd(), 'able_store/Gen3'),
-    getWindowIDs: "./src/Generations/Gen3/helper-scripts/getWindowIDs.sh",
-    helperScripts: "./src/Generations/Gen3/helper-scripts",
-    windowMove: "./src/Generations/Gen3/helper-scripts/windowMove.sh"
+    ableStore: join(cwd(), 'universal-commands'),
+    getWindowIDs: "./src/Generations/helper-scripts/getWindowIDs.sh",
+    helperScripts: "./src/Generations/helper-scripts",
+    windowMove: "./src/Generations/helper-scripts/windowMove.sh"
 }
 
 export function CrawlWeb(query) {

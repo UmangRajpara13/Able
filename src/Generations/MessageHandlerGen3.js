@@ -17,7 +17,7 @@ process.on("uncaughtException", (error) => {
 
 process.on("SIGINT", () => {
     const killPort = spawn(`bash`, ['killPort.sh'], {
-        cwd: './src/Generations/Gen3/helper-scripts',
+        cwd: './src/Generations/helper-scripts',
         detached: true,
         stdio: 'ignore',
     })
