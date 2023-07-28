@@ -1,12 +1,6 @@
-<div align="center">
+<div align="left">
 
-<p align="center">
-  <a aria-label="Arrow logo" href="">
-    <img src="./assets/128x128.jpeg">
-  </a>
-</p>  
-
-# Able - Voice Interface for Computers #
+# Voice Interface for Computers #
 Add voice commands to any Desktop Apps with system-wide shared Speech to Text Engine.​
 </div >
 
