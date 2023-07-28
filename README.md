@@ -91,3 +91,10 @@ The documentaion is under development. In the meantime, please refer to source c
     <img src="./assets/able_architecture.jpg">
   </a>
 </p>  
+
+## Milestones ##
+
+- Develop an C++ addon for Python part of this project.
+Hence, it will eventually become an Electron App.
+
+- Add support for realocation of speech-to-text service for other uses cases (as requested by other apps) besides microphone service.   
