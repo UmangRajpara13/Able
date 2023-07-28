@@ -71,12 +71,12 @@ scoop install ffmpeg
 
     npm run able
 
-#### and in 2nd Terminal window  recommended.
+#### and in 2nd Terminal window.
 
     npm run listen
 
 
-Avoid using in-built microphone of your laptop, External headset with Microphone is 
+Avoid using in-built microphone of your laptop, External headset with Microphone is recommended
 
 ## Intergrate Voice Support in your Extensions/Apps
 
