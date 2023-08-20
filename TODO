@@ -1,0 +1,16 @@
+In order.
+
+
+- Wake word for ChatGPT (via API)
+
+An Electron App that launches a window. focus on the window will allow STT injection. onClick or on Enter will make API call. giant area to close this window(ditching close icon)
+
+perhaps access to chat history would be nice a well.
+
+ability to run code / file Uploads like 'code interpreter'.
+
+- C++ imlementation of python part(C++ Addon)
+
+- Electron App
+
+- 
