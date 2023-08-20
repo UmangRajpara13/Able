@@ -38,7 +38,7 @@ async def main(frames=100_000_000, channels=1, dtype='float32', **kwargs):
     observer.schedule(MyHandler(), path='.', recursive=True)
     observer.start()
 
-    await asyncio.create_task(connectWebSocket("wss://localhost:"+str(sys.argv[1])))
+    await asyncio.create_task(connectWebSocket("ws://localhost:"+str(sys.argv[1])))
        
     
  

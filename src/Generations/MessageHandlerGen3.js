@@ -29,31 +29,31 @@ process.on("SIGINT", () => {
     restart.unref();
 });
 
-export function MessageHandlerGen3(message, wsMap,focusedClientId) {
+export function MessageHandlerGen3(message, wsMap,focusedIdentifier,focusedConnectionId) {
 
     message = message
     wsMap = wsMap
 
     switch (Object.keys(message)[0]) {
-        case `stt`:
-            console.log(chalk.blue('\n\n( Gen 3 )', `${message["stt"]}\n`));
+        case `transcription`:
+            console.log(chalk.blue('\n\n( Gen 3 )', `${message["transcription"]}\n`));
             appendFile(
                 "record.txt",
-                `${message["stt"].trim()}\n`,
+                `${message["transcription"].trim()}\n`,
                 (err) => {
                     if (err) throw err;
                 }
             );
-            sentenceProcessor(message["stt"], wsMap,focusedClientId)
+            sentenceProcessor(message["transcription"], wsMap,focusedIdentifier,focusedConnectionId)
             break;
         case `sttpid`:
             sttpid = message["sttpid"];
             console.log(`sttPID`,sttpid)
             break;
-        // case `awareness`:
-        //     dataPacket = message["awareness"]
-        //     awarenessProcessor(dataPacket)
-        //     break;
+        case `awareness`:
+            dataPacket = message["awareness"]
+            // awarenessProcessor(dataPacket)
+            break;
         // case `requestSTT`:
         //     dataPacket = message["requestSTT"]["id"]
         //     console.log('requestSTT', dataPacket)
@@ -64,7 +64,7 @@ export function MessageHandlerGen3(message, wsMap,focusedClientId) {
             // RedirectSTT(null)
             // break;
         default:
-            console.log(`Unhandled ->`,message);
+            console.log(`Unhandled -> ${Object.keys(message)[0]}`,message);
             break;
     }
 }

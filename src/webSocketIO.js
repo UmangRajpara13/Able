@@ -1,16 +1,12 @@
 import { WebSocketServer } from "ws";
 import chalk from "chalk";
 import { MessageHandlerGen3 } from "./Generations/MessageHandlerGen3.js";
-import { readFileSync } from 'fs';
-import https from 'https'
-import { join } from "path";
-import { cwd } from "process";
 
-var wss
 var wsMap = new Map()
-var focusedClientId = null
+var focusedIdentifier = null
+var focusedConnectionId = null
 
-function SetupWebSocketServer(server) {
+function SetupWebSocketServer(wss) {
 
   wss.on("connection", async (ws, req) => {
     console.log(`Connection Established! -> (PORT=1111)`);
@@ -19,14 +15,17 @@ function SetupWebSocketServer(server) {
     ws.on("close", (wsc) => {
       console.log("Connection Closed");
 
-      wsMap.forEach((value, key, map) => {
-        var tmpArr = []
-        wsMap.get(key).forEach(client => {
-          if (!client["_socket"]["_readableState"]["ended"]) {
-            tmpArr.push(client)
+      wsMap.forEach((connections, identifier, map) => {
+        // console.log(clients)
+
+        connections.forEach((client, timeStamp, map) => {
+          // console.log(client)
+          // console.log(timeStamp)
+
+          if (client["_socket"]["_readableState"]["ended"]) {
+            wsMap.get(identifier).delete(timeStamp)
           }
-        });
-        wsMap.set(key, tmpArr)
+        })
       })
     });
 
@@ -39,33 +38,41 @@ function SetupWebSocketServer(server) {
       message = JSON.parse(`${recievedData}`)
 
       switch (Object.keys(message)[0]) {
-        case 'id':
-          console.log(chalk.magenta(`\n${message["id"]}\n`));
+        case 'identifier':
 
-          if (wsMap.get(message["id"])) {
-            var allWsClients = wsMap.get(message["id"]);
-            allWsClients.push(ws);
-            wsMap.set(message["id"], allWsClients);
+          console.log(chalk.magenta(`\n${message["identifier"]}\n`));
+
+          const timeStamp = Date.now()
+
+          ws.send(JSON.stringify({ connectionId: { timeStamp: timeStamp } }))
+
+          if (wsMap.get(message["identifier"])) {
+
+            const clientMap = wsMap.get(message["identifier"])
+            clientMap.set(timeStamp, ws)
+            // console.log(clientMap.keys())
+            wsMap.set(message["identifier"], clientMap);
+
           } else {
-            wsMap.set(message["id"], [ws]);
+            const clientMap = new Map()
+            clientMap.set(timeStamp, ws)
+            wsMap.set(message["identifier"], clientMap);
           }
-          console.log(
-            `Services Connected : ${wsMap.get(message["id"])}, ${wsMap.get(message["id"]).length
-            }`
-          );
+          console.log(`Services Connected >`, wsMap.keys());
           break;
-        case 'focusedClientId':
-          focusedClientId = message["focusedClientId"];
-          console.log(`focusedClientId: ${focusedClientId}`)
+        case 'windowState':
+          console.log(message.windowState)
+          if (message.windowState.isWindowFocused) {
+            focusedIdentifier = message.windowState.identifier
+            focusedConnectionId = message.windowState.connectionId
+          }
+          console.log(focusedIdentifier, focusedConnectionId)
           break;
         default:
-          MessageHandlerGen3(message, wsMap, focusedClientId)
+          MessageHandlerGen3(message, wsMap, focusedIdentifier, focusedConnectionId)
           break;
       }
     });
-  });
-  server.listen(1111, () => {
-    console.log('Server listening on port 1111');
   });
 }
 
@@ -74,15 +81,8 @@ function SetupWebSocketServer(server) {
 export function StartWebSocketServer() {
 
   try {
-
-    const options = {
-      key: readFileSync(join(cwd(), 'src/certificates/server.key')),
-      cert: readFileSync(join(cwd(), 'src/certificates/server.crt'))
-    };
-
-    const server = https.createServer(options);
-    wss = new WebSocketServer({ server });
-    SetupWebSocketServer(server);
+    const wss = new WebSocketServer({ port: 1111 });
+    SetupWebSocketServer(wss);
   } catch (error) {
     console.log(`error caught`, error);
   }

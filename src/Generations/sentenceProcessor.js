@@ -17,7 +17,7 @@ import { homedir } from "os";
 var awareness = {}
 var myProjects = {}
 
-var universalCommands, universalCommandsList =[]
+var universalCommands, universalCommandsList = []
 
 const filePaths = {
     universalCommands: join(process.cwd(), 'universal-commands'),
@@ -165,7 +165,7 @@ watchNativeCommands.on('all', (event, nativeCommandsPath) => {
     } catch (error) { }
 })
 
-export function sentenceProcessor(message, wsMap, focusedClientId) {
+export function sentenceProcessor(message, wsMap, focusedIdentifier, focusedConnectionId) {
 
     const spokenSentence = message.trim();
     const spokenSentenceLc = spokenSentence.toLowerCase();
@@ -227,11 +227,18 @@ export function sentenceProcessor(message, wsMap, focusedClientId) {
 
             // process.stdout.write(chalk.green(`( onActiveWindow )`));
 
-            focusedClientId && wsMap.get(focusedClientId).forEach((client) => {
+            focusedIdentifier && wsMap.get(focusedIdentifier).forEach((client, timeStamp) => {
                 const dataPacket = {
-                    spokenSentence: spokenSentence
+                    transcription: {
+                        spokenSentence: spokenSentence
+                    }
                 }
-                client.send(JSON.stringify(dataPacket));
+                // console.log(client)
+                if (focusedConnectionId === timeStamp) {
+                    console.log(timeStamp)
+
+                    client.send(JSON.stringify(dataPacket));
+                }
             })
         }
     }

@@ -10,11 +10,10 @@ import json
 import ffmpeg
 import numpy as np
 from termcolor import colored
-import ssl
 
 ws=None
 
-def transcription():
+def transcribe():
     try:
         # This launches a subprocess to decode audio while down-mixing and resampling as necessary.
         # Requires the ffmpeg CLI and `ffmpeg-python` package to be installed.
@@ -32,8 +31,8 @@ def transcription():
     result = model.transcribe(arr)
     transcript = result["text"]
     print(f"\n{colored(transcript,'blue')}\n")
-    stt = {"stt": result["text"]}
-    if(len(result["text"])): asyncio.run(send_message(json.dumps(stt)))
+    transcription = {"transcription": result["text"]}
+    if(len(result["text"])): asyncio.run(send_message(json.dumps(transcription)))
     # asyncio.create_task(Transcribe(arr))
 
 
@@ -139,7 +138,7 @@ async def record_buffer(**kwargs):
                                 file.write(buffer)
                                 file.close()
                     
-                            transcription()
+                            transcribe()
 
                             listening_initialized = False
                             timer.stop()
@@ -175,12 +174,10 @@ async def record_buffer(**kwargs):
 async def connectWebSocket(uri):
     global ws
     another_task = None
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    ssl_context.check_hostname = False
-    ssl_context.verify_mode = ssl.CERT_NONE
+
     while True:
         try:
-            async with websockets.connect(uri, ssl=ssl_context) as websocket:
+            async with websockets.connect(uri) as websocket:
                 # Send and receive messages using the WebSocket connection
                 ws=websocket
                 sttpid = {"sttpid": str(os.getpid())}
@@ -195,16 +192,9 @@ async def connectWebSocket(uri):
 
                 # Handle the connection close event
                 print("Connection closed")
-                # if another_task:
-                #     another_task.cancel()
-                #     another_task = None
-                #     print("Stopped another task")
+
         except:
             print("Connection error. Retrying in 1 second.")
-            # if another_task:
-            #     another_task.cancel()
-            #     another_task = None
-            #     print("Stopped another task. Retrying...")
             time.sleep(1)
 
 async def send_message(message):
