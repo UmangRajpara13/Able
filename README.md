@@ -1,6 +1,6 @@
 <div align="left">
 
-# Voice Interface for Computers #
+# Voice Interface for Computer #
 Add voice commands to any Desktop Apps with system-wide shared Speech to Text Engine.​
 </div >
 
