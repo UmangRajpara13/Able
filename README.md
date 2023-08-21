@@ -76,7 +76,7 @@ The documentaion is under development. In the meantime, please refer to source c
 
 <p align="center">
   <a aria-label="Arrow logo" href="">
-    <img src="./assets/able_architecture.jpg">
+    <img src="./assets/able_architecture.png">
   </a>
 </p>  
 
