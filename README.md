@@ -8,6 +8,14 @@ Add voice commands to any Desktop Apps with system-wide shared Speech to Text En
 
 https://youtu.be/L947X8d8LUE
 
+## Architecture ##
+
+<p align="center">
+  <a aria-label="Arrow logo" href="">
+    <img src="./assets/able_architecture.png">
+  </a>
+</p>  
+
 ## Software Environment ##
 
   python 3.9.9  
@@ -69,16 +77,6 @@ Avoid using in-built microphone of your laptop, External headset with Microphone
 ## Intergrate Voice Support in your Extensions/Apps (Beta)
 
 The documentaion is under development. In the meantime, please refer to source code of this [Extension](https://github.com/thevoyagingstar/code-able) for VS Code
-
-
-## Architecture ##
-
-
-<p align="center">
-  <a aria-label="Arrow logo" href="">
-    <img src="./assets/able_architecture.png">
-  </a>
-</p>  
 
 ## Milestones ##
 
