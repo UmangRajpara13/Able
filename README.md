@@ -1,12 +1,25 @@
 <div align="left">
 
 # Voice Interface for Computer #
-Add voice commands to any Desktop Apps with system-wide shared Speech to Text Engine.​
+Add voice commands to any Desktop App, Automation scripts or CLI with system-wide **shared** Speech to Text Engine.​
 </div >
 
-## Demo ##
 
-https://youtu.be/L947X8d8LUE
+#### [Watch Demo](https://youtu.be/WQbUCbn8PN0)
+
+
+## Features ##
+
+Real-Time transcription - starts recording when a speaker says something, stops recording(after 0.5s) when speaker stops speaking.  
+
+Sharing ASR(speech-to-text) with  
+
+  - Exensions/Plugins/Add-ons for a desktop app (ex. [Code](https://github.com/UmangRajpara13/TalkGPT))    
+  - Any Desktop app without integration of extension (ex. [TalkGPT](https://github.com/UmangRajpara13/Code))    
+
+Executes user defined voice commands defined in a simple .json file  
+
+Google Anything - start by saying google followed by 'your_search_query' (ex: Google what the weather outside?)
 
 ## Architecture ##
 
@@ -76,7 +89,7 @@ Avoid using in-built microphone of your laptop, External headset with Microphone
 
 ## Intergrate Voice Support in your Extensions/Apps (Beta)
 
-The documentaion is under development. In the meantime, please refer to source code of this [Extension](https://github.com/thevoyagingstar/code-able) for VS Code
+The documentaion is under development. In the meantime, please refer to source code of this [Extension](https://github.com/UmangRajpara13/Code) for VS Code
 
 ## Milestones ##
 

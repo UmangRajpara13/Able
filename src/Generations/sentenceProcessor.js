@@ -183,21 +183,13 @@ export function sentenceProcessor(message, wsMap, focusedIdentifier, focusedConn
     process.stdout.write(chalk.grey(`\n( intent )  ${intent} \n`));
     var commandObj
 
-    // check if its a Question
-    if (spokenSentence.endsWith("?") |
-        spokenSentenceLc.startsWith("google")
+    if (spokenSentenceLc.startsWith("google")
     ) {
-        // if spokenSentence ends with ? and its a command.
-        if (spokenSentence.endsWith('?') && (universalCommandsList.includes(intent))) {
-            commandObj = universalCommands[intent]
-            CommandProcessor(commandObj)
-            return
-        }
-        if (spokenSentenceLc.startsWith("google")) {
-            CrawlWeb(spokenSentenceLc.replace("google", "").trim())
-        }
-    } else {
-        // check for Native / Universal / API / CLI actions
+        CrawlWeb(spokenSentenceLc.replace("google", "").trim())
+
+    }
+    // check for Native / Universal(CLI) actions
+    if (universalCommandsList.includes(intent) || nativeActionsKeys.includes(intent)) {
 
         if (nativeActionsKeys.includes(intent)) {
             process.stdout.write(chalk.green(`( Native ) ${intent} `));
@@ -220,27 +212,24 @@ export function sentenceProcessor(message, wsMap, focusedIdentifier, focusedConn
             CommandProcessor(commandObj)
 
             return
-        } else {
-            //  we dispatch the spoken sentence (spokenSentence)
-            //  to all windows of an app (focusedClientId), only the window with focus
-            //  should process it! 
-
-            // process.stdout.write(chalk.green(`( onActiveWindow )`));
-
-            focusedIdentifier && wsMap.get(focusedIdentifier).forEach((client, timeStamp) => {
-                const dataPacket = {
-                    transcription: {
-                        spokenSentence: spokenSentence
-                    }
-                }
-                // console.log(client)
-                if (focusedConnectionId === timeStamp) {
-                    console.log(timeStamp)
-
-                    client.send(JSON.stringify(dataPacket));
-                }
-            })
         }
+    }
+
+    else {
+        //  we dispatch the spoken sentence (spokenSentence) to App/Extension/Plugin/Add-on
+        console.log('dispatching to',focusedIdentifier,focusedConnectionId)
+        const dataPacket = {
+            transcription: {
+                spokenSentence: spokenSentence
+            }
+        }
+
+        focusedIdentifier && wsMap.get(focusedIdentifier).forEach((client, timeStamp) => {
+            if (focusedConnectionId === timeStamp) {
+                client.send(JSON.stringify(dataPacket));
+                return;
+            }
+        })
     }
 }
 

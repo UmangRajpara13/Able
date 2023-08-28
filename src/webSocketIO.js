@@ -10,8 +10,8 @@ function SetupWebSocketServer(wss) {
 
   wss.on("connection", async (ws, req) => {
     console.log(`Connection Established! -> (PORT=1111)`);
-    ws = ws;
-
+    // ws = ws;
+    // console.log(ws)
     ws.on("close", (wsc) => {
       console.log("Connection Closed");
 
@@ -33,43 +33,54 @@ function SetupWebSocketServer(wss) {
 
     ws.on("message", async (recievedData) => {
 
-      var message = `${recievedData}`
+      // var dataPacket = `${recievedData}`
 
-      message = JSON.parse(`${recievedData}`)
+      const dataPacket = JSON.parse(`${recievedData}`)
+      // console.log(dataPacket)
 
-      switch (Object.keys(message)[0]) {
-        case 'identifier':
+      switch (Object.keys(dataPacket)[0]) {
+ 
+        case 'registerConnection':
 
-          console.log(chalk.magenta(`\n${message["identifier"]}\n`));
 
-          const timeStamp = Date.now()
+          const connection = dataPacket["registerConnection"]
 
-          ws.send(JSON.stringify({ connectionId: { timeStamp: timeStamp } }))
+          console.log(chalk.magenta(`\n${connection["identifier"]},${connection["connectionId"]}\n`));
 
-          if (wsMap.get(message["identifier"])) {
+          if (wsMap.get(connection["identifier"])) {
 
-            const clientMap = wsMap.get(message["identifier"])
-            clientMap.set(timeStamp, ws)
+            const clientMap = wsMap.get(connection["identifier"])
+            clientMap.set(connection['connectionId'], ws)
             // console.log(clientMap.keys())
-            wsMap.set(message["identifier"], clientMap);
+            wsMap.set(connection["identifier"], clientMap);
 
           } else {
             const clientMap = new Map()
-            clientMap.set(timeStamp, ws)
-            wsMap.set(message["identifier"], clientMap);
+            clientMap.set(connection['connectionId'], ws)
+            wsMap.set(connection["identifier"], clientMap);
+          }
+          if (connection.isWindowFocused) {
+            focusedIdentifier = connection.identifier
+            focusedConnectionId = connection.connectionId
+            console.log(focusedIdentifier, focusedConnectionId)
           }
           console.log(`Services Connected >`, wsMap.keys());
           break;
         case 'windowState':
-          console.log(message.windowState)
-          if (message.windowState.isWindowFocused) {
-            focusedIdentifier = message.windowState.identifier
-            focusedConnectionId = message.windowState.connectionId
+
+          const windowState = dataPacket["windowState"]
+
+          console.log(windowState)
+          if (windowState.isWindowFocused) {
+            focusedIdentifier = windowState.identifier
+            focusedConnectionId = windowState.connectionId
+
+            // console.log(focusedIdentifier, focusedConnectionId)
+
           }
-          console.log(focusedIdentifier, focusedConnectionId)
           break;
         default:
-          MessageHandlerGen3(message, wsMap, focusedIdentifier, focusedConnectionId)
+          MessageHandlerGen3(dataPacket, wsMap, focusedIdentifier, focusedConnectionId)
           break;
       }
     });
