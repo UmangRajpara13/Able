@@ -10,7 +10,7 @@ Add voice commands to any Desktop App, Automation scripts or CLI with system-wid
 
 ## Features ##
 
-Real-Time transcription - starts recording when a speaker says something, stops recording(after 0.5s) when speaker stops speaking.  
+RealTime transcription - starts recording when a speaker says something, stops recording(after 0.5s) when speaker stops speaking.  
 
 Sharing ASR(speech-to-text) with  
 
@@ -19,7 +19,7 @@ Sharing ASR(speech-to-text) with
 
 Executes user defined voice commands defined in a simple .json file  
 
-Google Anything - start by saying google followed by 'your_search_query' (ex: Google what the weather outside?)
+Google Anything - start by saying google followed by 'your_search_query' (ex: Google what's the weather outside?)
 
 ## Architecture ##
 
