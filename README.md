@@ -87,13 +87,3 @@ scoop install ffmpeg
 
 Avoid using in-built microphone of your laptop, External headset with Microphone is recommended
 
-## Intergrate Voice Support in your Extensions/Apps (Beta)
-
-The documentaion is under development. In the meantime, please refer to source code of this [Extension](https://github.com/UmangRajpara13/Code) for VS Code
-
-## Milestones ##
-
-- Develop an C++ addon for Python part of this project.
-Hence, it will eventually become an Electron App.
-
-- Add support for realocation of speech-to-text service for other uses cases (as requested by other apps) besides microphone service.   
