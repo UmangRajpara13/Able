@@ -1,6 +1,6 @@
 <div align="left">
 
-# Voice Interface for Computer #
+# Shared Voice Interface for Desktop Apps #
 Add voice commands to any Desktop App, Automation scripts or CLI with system-wide **shared** Speech to Text Engine.​
 </div >
 
