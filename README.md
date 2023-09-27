@@ -14,8 +14,8 @@ RealTime transcription - starts recording when a speaker says something, stops r
 
 Sharing ASR(speech-to-text) with  
 
-  - Exensions/Plugins/Add-ons for a desktop app (ex. [Code](https://github.com/UmangRajpara13/TalkGPT))    
-  - Any Desktop app without integration of extension (ex. [TalkGPT](https://github.com/UmangRajpara13/Code))    
+  - Exensions/Plugins/Add-ons for a desktop app (ex. [Code](https://github.com/UmangRajpara13/Code))    
+  - Any Desktop app without integration of extension (ex. [TalkGPT](https://github.com/UmangRajpara13/TalkGPT))    
 
 Executes user defined voice commands defined in a simple .json file  
 
