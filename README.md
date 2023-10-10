@@ -41,8 +41,23 @@ System Ram : 8Gb (2x4Gb) [Recommended > 16Gb]
 Graphic card : Nvidia Graphics MX350(Pascal Architecture, CUDA capability 6.1, VRAM 2GB)  
 Microphone : External Bluetooth Headeset with Microphone Arm (Recommended). Avoid using in-built microphone of your laptop.  
 
-The project uses [Whisper](https://github.com/openai/whisper) by OpenAI which requires the command-line tool [`ffmpeg`](https://ffmpeg.org/) to be installed on your system, which is available from most package managers:
 
+
+
+## Installation ##
+
+
+
+    git clone git@github.com:UmangRajpara13/able.git
+    cd ./able/listen
+    python3 -m venv venv
+    source "venv/bin/activate"
+    pip install -r requirements.txt
+    deactivate
+    cd ..
+    npm install
+
+The project uses [Whisper](https://github.com/openai/whisper) by OpenAI which requires the command-line tool [`ffmpeg`](https://ffmpeg.org/) to be installed on your system, which is available from most package managers:
 
 ```bash
 # on Ubuntu or Debian
@@ -60,18 +75,6 @@ choco install ffmpeg
 # on Windows using Scoop (https://scoop.sh/)
 scoop install ffmpeg
 ```
-
-
-## Installation ##
-
-    git clone git@github.com:UmangRajpara13/able.git
-    cd ./able/listen
-    python3 -m venv venv
-    source "venv/bin/activate"
-    pip install -r requirements.txt
-    deactivate
-    cd ..
-    npm install
 
 ## Run ##   
 
