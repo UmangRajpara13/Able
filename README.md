@@ -10,7 +10,7 @@ Add voice commands to any Desktop App, Automation scripts or CLI with system-wid
 
 ## Features ##
 
-RealTime transcription - starts recording when a speaker says something, stops recording(after 0.5s) when speaker stops speaking.  
+RealTime transcription - starts recording when a speaker says something, stops recording if speaker stops speaking for 0.5sec.  
 
 Sharing ASR(speech-to-text) with  
 
