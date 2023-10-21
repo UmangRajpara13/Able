@@ -1,23 +1,19 @@
 <div align="left">
 
 # Shared Voice Interface #
-Add voice commands to any Desktop App, Automation scripts or CLI with system-wide **shared** Speech to Text Engine.​
+This project provides system-wide **shared** Speech to Text Engine to:  
+1. Add voice commands to any Desktop App (via Extension/Addon/Plugin ex.[Code](https://github.com/UmangRajpara13/Code) or integrate into your own app like [TalkGPT](https://github.com/UmangRajpara13/TalkGPT)).  
+2. Run your Automation scripts/command-line commands with personalized voice commands(uses a JSON file to link voice commands to programmatic execution).
+
 </div >
 
 
 #### [Watch Demo](https://youtu.be/WQbUCbn8PN0)
 
 
-## Features ##
+## Built-In Features ##
 
 RealTime transcription - starts recording when a speaker says something, stops recording if speaker stops speaking for 0.5sec.  
-
-Sharing ASR(speech-to-text) with  
-
-  - Exensions/Plugins/Add-ons for a desktop app (ex. [Code](https://github.com/UmangRajpara13/Code))    
-  - Any Desktop app without integration of extension (ex. [TalkGPT](https://github.com/UmangRajpara13/TalkGPT))    
-
-Executes user defined voice commands defined in a simple .json file  
 
 Google Anything - start by saying google followed by 'your_search_query' (ex: Google what's the weather outside?)
 
